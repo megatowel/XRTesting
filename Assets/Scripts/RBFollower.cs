@@ -145,7 +145,7 @@ public class RBFollower : MonoBehaviour
     {
         
         rb.MovePosition(transform.parent.TransformPoint(newPosition));
-        rb.MoveRotation(newRotation);
+        rb.MoveRotation(transform.parent.rotation * newRotation);
     }
 
     protected virtual void OnDestroy()

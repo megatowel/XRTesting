@@ -135,8 +135,8 @@ GameObject:
   - component: {fileID: 168523538}
   - component: {fileID: 168523537}
   - component: {fileID: 168523536}
-  - component: {fileID: 168523535}
   - component: {fileID: 168523534}
+  - component: {fileID: 168523535}
   m_Layer: 0
   m_Name: CubeRHand
   m_TagString: Untagged
@@ -183,21 +183,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 168523532}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c2fadf230d1919748a9aa21d40f74619, type: 3}
+  m_Script: {fileID: 11500000, guid: 2ad6c71c44e02874d964bc6e80706106, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_TrackingType: 0
-  m_UpdateType: 0
   m_PositionAction:
     m_Name: Position
     m_Type: 0
     m_ExpectedControlType: 
-    m_Id: d34cb66a-1d16-44d7-ad5c-4a9c40d3e2f7
+    m_Id: 04c403b0-9bd6-41e5-8241-b60ad02fe4fd
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings:
     - m_Name: 
-      m_Id: 88d7d162-410f-4fc6-87ae-8b7ede2dca26
+      m_Id: 09817414-9b40-4aea-bf9a-3d0a446ad634
       m_Path: <XRController>{RightHand}/devicePosition
       m_Interactions: 
       m_Processors: 
@@ -208,12 +207,12 @@ MonoBehaviour:
     m_Name: Rotation
     m_Type: 0
     m_ExpectedControlType: 
-    m_Id: a309880b-cafc-46cd-aa66-476ec0f029a8
+    m_Id: 1910f2e6-fbc3-40cf-a46c-d0595a6e69e0
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings:
     - m_Name: 
-      m_Id: 288f714c-d18e-48e6-8269-68ce3706cd6b
+      m_Id: 1f2927ba-2cb9-499d-9f9f-d1fad182aae4
       m_Path: <XRController>{RightHand}/deviceRotation
       m_Interactions: 
       m_Processors: 
