@@ -1,0 +1,79 @@
+{
+    "name": "XRTestingActions",
+    "maps": [
+        {
+            "name": "Debug",
+            "id": "52fa52e9-0a96-4e8a-8ea6-9a6e969ddacf",
+            "actions": [
+                {
+                    "name": "DebugAction",
+                    "type": "Button",
+                    "id": "3b4023e8-ce01-4dc2-8970-a2e20ec31e50",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "91ec0af3-c791-43c9-8c9a-f4355f5ec695",
+                    "path": "<XRController>{RightHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DebugAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "XRTestPlayer",
+            "id": "0b541c4e-f844-48bd-a5b7-934c32a7eeeb",
+            "actions": [
+                {
+                    "name": "Rotate",
+                    "type": "Value",
+                    "id": "99c0e4c8-a3de-4d4f-9bb4-a02c3ae683fb",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Teleport",
+                    "type": "Button",
+                    "id": "fee6774a-afaf-42d7-b9ff-d34327bc3022",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "992a26c0-7d6b-49c4-92f4-344a78dc85f4",
+                    "path": "<OculusTouchController>{RightHand}/thumbstick/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b26622bf-54d8-4d3f-a688-9ffffce9c4ac",
+                    "path": "<OculusTouchController>{RightHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Teleport",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
