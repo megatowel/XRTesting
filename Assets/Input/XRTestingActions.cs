@@ -76,8 +76,30 @@ public class @XRTestingActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""d89eb113-51ee-43e6-a1a8-71bff2a6139e"",
+                    ""path"": ""<WMRSpatialController>{RightHand}/joystick/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""b26622bf-54d8-4d3f-a688-9ffffce9c4ac"",
                     ""path"": ""<OculusTouchController>{RightHand}/primaryButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Teleport"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""03785d7f-6766-44d3-8e2a-1775be05c775"",
+                    ""path"": ""<WMRSpatialController>{RightHand}/touchpadClicked"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
