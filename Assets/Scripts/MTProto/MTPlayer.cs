@@ -7,25 +7,14 @@ public class MTPlayer : MonoBehaviour
 {
     public Camera HeadCamera;
     public GameObject HeadModel;
+    public GameObject LeftHand;
+    public GameObject RightHand;
     public XRTestingActions XRInputs;
 
     private void OnEnable()
     {
         XRInputs.Enable();
-        XRInputs.XRTestPlayer.Teleport.started += Teleport_Held;
-        XRInputs.XRTestPlayer.Teleport.canceled += Teleport_Released;
     }
-
-    private void Teleport_Held(InputAction.CallbackContext obj)
-    {
-        Debug.Log("Teleport held.");
-    }
-
-    private void Teleport_Released(InputAction.CallbackContext obj)
-    {
-        Debug.Log("Teleport released.");
-    }
-
 
     private void OnDisable()
     {
@@ -50,7 +39,7 @@ public class MTPlayer : MonoBehaviour
             //Hide head locally
             foreach (MeshRenderer headpiece in HeadModel.GetComponentsInChildren<MeshRenderer>())
             {
-                headpiece.enabled = false;
+                headpiece.enabled = true;
             }
         }
         else
