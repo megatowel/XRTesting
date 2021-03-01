@@ -1,0 +1,17 @@
+{
+    "name": "FMOD_Unity_Runtime",
+    "rootNamespace": "",
+    "references": [
+        "GUID:af1f15d5aaf61e044bd3db8f255be216",
+        "GUID:f06555f75b070af458a003d92f9efb00"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

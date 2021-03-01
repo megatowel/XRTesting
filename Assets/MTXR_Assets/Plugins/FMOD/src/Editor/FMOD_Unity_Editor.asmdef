@@ -1,0 +1,18 @@
+{
+    "name": "FMOD_Unity_Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:bff2a23415907e341a650cb469d7af5b"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
