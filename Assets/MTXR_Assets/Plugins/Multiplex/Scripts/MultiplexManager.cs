@@ -26,7 +26,6 @@ namespace Megatowel.Multiplex
         public static ulong SelfId;
 
         private IntPtr multiplex;
-        private Thread processThread;
         private static ConcurrentQueue<MultiplexEvent> sendQueue = new ConcurrentQueue<MultiplexEvent>();
         private static ConcurrentDictionary<uint, List<ulong>> userLists = new ConcurrentDictionary<uint, List<ulong>>();
 
@@ -70,12 +69,6 @@ namespace Megatowel.Multiplex
 
         public void Setup(string host)
         {
-            if (processThread != null)
-            {
-                MTDebug.LogError(new MultiplexException("You can not set up another Multiplex client without cleaning up your old one."));
-                return;
-            }
-
             multiplex = Multiplex.c_make_client();
             if (Multiplex.c_setup(multiplex, Encoding.UTF8.GetBytes(host), hostPort) == 0)
             {
@@ -85,7 +78,6 @@ namespace Megatowel.Multiplex
 
         public void Dispose()
         {
-            processThread.Abort();
         }
 
         private void Process()
