@@ -8,7 +8,6 @@ namespace Megatowel.Multiplex
         private void OnEnable()
         {
             MTDebug.Log("enabled");
-            base.OnEnable();
         }
 
         private void OnDisable()
@@ -18,25 +17,22 @@ namespace Megatowel.Multiplex
 
         private void Update()
         {
-            MTDebug.Log("update");
-        }
-        /*
-        public override void OnSerialize()
-        {
 
             MTDebug.Log("serialize");
-            Stream.SendNext("bitch");
+            Stream.SendNext(37);
+            MTDebug.Log(Stream.ReceiveNext<int>());
+            /*
             try
             {
                 MTDebug.Log("receiving " + Stream.receiving.Count);
                 MTDebug.Log(Stream.ReceiveNext<string>());
-                MTDebug.Log(Stream.ReceiveNext<int>());
+                //MTDebug.Log(Stream.ReceiveNext<int>());
             }
             catch (Exception e)
             {
 
-            }
-        }*/
+            }*/
+        }
 
         struct poop
         {

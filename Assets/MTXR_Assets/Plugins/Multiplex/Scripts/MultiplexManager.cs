@@ -173,17 +173,8 @@ namespace Megatowel.Multiplex
             catch (Exception e)
             {
                 Multiplex.c_destroy(multiplex);
-                if (e.GetType() == typeof(ThreadAbortException))
-                {
-                    MTDebug.Log("Aborting thread!");
-                    return;
-                }
-                else
-                {
-                    MTDebug.LogError(e);
-                }
+                MTDebug.LogError(e);
             }
-            MTDebug.Log("Thread closed normally");
         }
 
         public static void Send(MultiplexEvent ev)

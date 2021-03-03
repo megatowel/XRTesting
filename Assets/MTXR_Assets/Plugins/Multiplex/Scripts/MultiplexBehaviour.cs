@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Megatowel.Multiplex
 {
-    public abstract class MultiplexBehaviour : MonoBehaviour
+    public class MultiplexBehaviour : MonoBehaviour
     {
         public static ReadOnlyCollection<MultiplexBehaviour> All => _all.AsReadOnly();
         private static List<MultiplexBehaviour> _all = new List<MultiplexBehaviour>();
@@ -27,14 +27,18 @@ namespace Megatowel.Multiplex
 
         private float time;
 
-        public void OnEnable()
-        {
-
+        public MultiplexBehaviour() {
             _all.Add(this);
             Channel = 1;
             Owner = Self;
             MultiplexManager.OnEvent += OnEvent;
             MultiplexManager.NetworkTick += MultiplexManager_NetworkTick;
+            Debug.Log("lol");
+        }
+
+        private void OnEnable()
+        {
+            Debug.Log("lol2");
         }
 
         private void MultiplexManager_NetworkTick()
@@ -69,6 +73,7 @@ namespace Megatowel.Multiplex
             //{
             if (ev.Info == "game")
             {
+                MTDebug.Log("we gettin stuff");
                 for (int i = 0; i < ev.Data.bytes.Length; i++)
                 {
                     Stream.receiving.Enqueue(ev.Data.bytes[i]);

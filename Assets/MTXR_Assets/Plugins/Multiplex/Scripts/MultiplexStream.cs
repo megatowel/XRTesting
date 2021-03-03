@@ -31,10 +31,10 @@ namespace Megatowel.Multiplex
             byte[] data = new byte[128];
             for (int i = 0; i < typelen; i++)
             {
-                while (true)
+                if (!receiving.TryDequeue(out data[i]))
                 {
-                    if (receiving.TryDequeue(out data[i]))
-                        break;
+                    MTDebug.Log("oof");
+                    break;
                 }
             }
             BinaryReader reader = new BinaryReader(new MemoryStream(data));
