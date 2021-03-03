@@ -59,14 +59,7 @@ ExportedObj/
 *.pdb.meta
 *.mdb.meta
 
-# FMOD Banks, Metadata, and local data
-*.bank
-*.bank.meta
-*.strings
-*.strings.meta
-FMODStudioCache.asset
 fmod_editor.log
-/Assets/Plugins/FMOD/Cache/Editor/
 
 # Unity3D generated file on crash reports
 sysinfo.txt
