@@ -79,9 +79,7 @@ namespace Megatowel.Multiplex
             multiplex = Multiplex.c_make_client();
             if (Multiplex.c_setup(multiplex, Encoding.UTF8.GetBytes(host), hostPort) == 0)
             {
-                MTDebug.Log("Starting Multiplex thread");
-                processThread = new Thread(new ThreadStart(Process));
-                processThread.Start();
+                MTDebug.Log("Starting Multiplex");
             }
         }
 
@@ -96,7 +94,7 @@ namespace Megatowel.Multiplex
             {
                 while (multiplex.ToInt64() != 0)
                 {
-                    var ev = Multiplex.c_process_event(multiplex, 10);
+                    var ev = Multiplex.c_process_event(multiplex, 0);
                     if (ev.Error == 0)
                     {
                         byte[] data = new byte[(int)ev.DataSize];
@@ -159,10 +157,16 @@ namespace Megatowel.Multiplex
                         {
                             Multiplex.c_disconnect(multiplex, 2500);
                             OnError?.Invoke(ev.Error);
-                            throw new MultiplexException("Recieved error from server: " + ev.Error);
+                            throw new MultiplexException("An error occurred: " + ev.Error);
+                        }
+                        else
+                        {
+                            break;
                         }
                     }
-
+                }
+                if (multiplex.ToInt64() != 0)
+                {
                     for (int i = 0; i < sendQueue.Count; i++)
                     {
                         MultiplexEvent sev;
@@ -203,6 +207,7 @@ namespace Megatowel.Multiplex
                 sendratedelta = 0f;
                 NetworkTick?.Invoke();
             }
+            Process();
         }
     }
 

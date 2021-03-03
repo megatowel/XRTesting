@@ -41,8 +41,9 @@ namespace Megatowel.Multiplex
             MTDebug.Log($"Creating new FMOD System to grab the microphone through {FMOD.Factory.System_Create(out RecordSystem)}");
             MTDebug.Log($"Setting the new System's OUTPUTTYPE to OPENSL {RecordSystem.setOutput(FMOD.OUTPUTTYPE.OPENSL)}");
             MTDebug.Log($"Initializing the RecordSystem {RecordSystem.init(virtchannels, FMOD.INITFLAGS.NORMAL, IntPtr.Zero)}");
+#else
+            RecordSystem = RuntimeManager.CoreSystem;
 #endif
-
 
             RESULT result;
             result = RecordSystem.getRecordNumDrivers(out int numdrivers, out _);

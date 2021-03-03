@@ -685,6 +685,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: '[XR Rig]'
       objectReference: {fileID: 0}
+    - target: {fileID: 7924244276017058323, guid: bb31415f81dfffd4199b74adfc9726a1, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb31415f81dfffd4199b74adfc9726a1, type: 3}
 --- !u!1 &1145444333
@@ -1017,6 +1021,24 @@ ReflectionProbe:
   m_UseOcclusionCulling: 1
   m_Importance: 1
   m_CustomBakedTexture: {fileID: 0}
+--- !u!1 &2131227721 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7924244276017058320, guid: bb31415f81dfffd4199b74adfc9726a1, type: 3}
+  m_PrefabInstance: {fileID: 756852350}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2131227722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2131227721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86c6556701af9e04380698b89f691b6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ListenerNumber: -1
 --- !u!1 &2138677391
 GameObject:
   m_ObjectHideFlags: 0
