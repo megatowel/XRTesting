@@ -64,10 +64,10 @@ namespace Megatowel.Multiplex
             }
             MTDebug.Log(Stream.sending.Count);
             if (arraySize > 0)
-                MultiplexManager.Send(new MultiplexEvent("game", new MultiplexData(totalData), 1U));
+                MultiplexManager.Send(new MultiplexPacket("game", new MultiplexData(totalData), 1U));
         }
 
-        private void OnEvent(MultiplexEvent ev)
+        private void OnEvent(MultiplexPacket ev)
         {
             //if (ev.User != MultiplexManager.SelfId)
             //{

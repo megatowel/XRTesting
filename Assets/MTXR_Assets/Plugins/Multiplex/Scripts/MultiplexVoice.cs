@@ -46,7 +46,7 @@ namespace Megatowel.Multiplex
             var sink = obj.AddComponent<MultiplexSink>();
         }
 
-        private void UserDisconnected(MultiplexEvent ev)
+        private void UserDisconnected(MultiplexPacket ev)
         {
             if (decoders.ContainsKey(ev.User))
             {
@@ -56,7 +56,7 @@ namespace Megatowel.Multiplex
             }
         }
 
-        void Process(MultiplexEvent ev)
+        void Process(MultiplexPacket ev)
         {
             if (ev.Info == "opus")
             {
@@ -86,7 +86,7 @@ namespace Megatowel.Multiplex
         public static void Send(short[] audio, uint channel)
         {
             byte[] data = encoder.Encode(audio);
-            MultiplexManager.Send(new MultiplexEvent("opus", new MultiplexData(data), channel));
+            MultiplexManager.Send(new MultiplexPacket("opus", new MultiplexData(data), channel));
         }
     }
 

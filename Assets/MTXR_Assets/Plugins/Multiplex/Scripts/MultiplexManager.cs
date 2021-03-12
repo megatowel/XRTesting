@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using Zenject;
 using UnityEngine;
+using Megatowel.Multiplex;
 
 namespace Megatowel.Multiplex
 {
@@ -16,17 +17,17 @@ namespace Megatowel.Multiplex
         public const int sendrate = 30;
         private float sendratedelta;
 
-        public static event Action<MultiplexEvent> OnEvent;
+        public static event Action<MultiplexPacket> OnEvent;
         public static event Action<MultiplexErrors> OnError;
-        public static event Action<MultiplexEvent> OnUserConnectEvent;
-        public static event Action<MultiplexEvent> OnUserDisconnectEvent;
+        public static event Action<MultiplexPacket> OnUserConnectEvent;
+        public static event Action<MultiplexPacket> OnUserDisconnectEvent;
         public static event Action OnSetup;
         public static event Action OnDisconnect;
         public static event Action NetworkTick;
         public static ulong SelfId;
 
-        private IntPtr multiplex;
-        private static ConcurrentQueue<MultiplexEvent> sendQueue = new ConcurrentQueue<MultiplexEvent>();
+        private MultiplexClient multiplex;
+        private static ConcurrentQueue<MultiplexPacket> sendQueue = new ConcurrentQueue<MultiplexPacket>();
         private static ConcurrentDictionary<uint, List<ulong>> userLists = new ConcurrentDictionary<uint, List<ulong>>();
 
         private readonly string hostServer = "104.37.189.85";
@@ -37,15 +38,11 @@ namespace Megatowel.Multiplex
 
         public void Initialize()
         {
-            if (Multiplex.init_enet() != 0)
-            {
-                throw new MultiplexException("Failed to initialize ENet.");
-            }
             Setup(hostServer);
 
             OnSetup += () =>
             {
-                Multiplex.c_bind_channel(multiplex, 1, 1);
+                multiplex.BindChannel(1, 1);
             };
 
             OnError += (error) =>
@@ -58,7 +55,7 @@ namespace Megatowel.Multiplex
                 Setup(hostServer);
             };
 
-            OnEvent += (MultiplexEvent ev) =>
+            OnEvent += (MultiplexPacket ev) =>
             {
                 if (ev.Info == "chat")
                 {
@@ -69,11 +66,9 @@ namespace Megatowel.Multiplex
 
         public void Setup(string host)
         {
-            multiplex = Multiplex.c_make_client();
-            if (Multiplex.c_setup(multiplex, Encoding.UTF8.GetBytes(host), hostPort) == 0)
-            {
-                MTDebug.Log("Starting Multiplex");
-            }
+            multiplex = new MultiplexClient();
+            multiplex.Connect(host, hostPort);
+            MTDebug.Log("Starting Multiplex");
         }
 
         public void Dispose()
@@ -84,22 +79,11 @@ namespace Megatowel.Multiplex
         {
             try
             {
-                while (multiplex.ToInt64() != 0)
+                while (multiplex.connected)
                 {
-                    var ev = Multiplex.c_process_event(multiplex, 0);
+                    var ev = multiplex.ProcessEvent(0);
                     if (ev.Error == 0)
                     {
-                        byte[] data = new byte[(int)ev.DataSize];
-                        byte[] info = new byte[(int)ev.InfoSize];
-                        if (ev.DataSize != 0)
-                        {
-                            Marshal.Copy(ev.Data, data, 0, (int)ev.DataSize);
-                        }
-                        if (ev.InfoSize != 0)
-                        {
-                            Marshal.Copy(ev.Info, info, 0, (int)ev.InfoSize);
-                        }
-
                         switch (ev.EventType)
                         {
                             case Multiplex.MultiplexEventType.UserSetup:
@@ -108,7 +92,7 @@ namespace Megatowel.Multiplex
                                 break;
 
                             case Multiplex.MultiplexEventType.UserMessage:
-                                OnEvent?.Invoke(new MultiplexEvent(ev.FromUserId, Encoding.UTF8.GetString(info), new MultiplexData(data), ev.ChannelId));
+                                OnEvent?.Invoke(new MultiplexPacket(ev.FromUserId, Encoding.UTF8.GetString(ev.Info), new MultiplexData(ev.Data), ev.ChannelId));
                                 break;
 
                             case Multiplex.MultiplexEventType.Disconnected:
@@ -116,14 +100,7 @@ namespace Megatowel.Multiplex
                                 throw new MultiplexException("Lost connection to server.");
 
                             case Multiplex.MultiplexEventType.InstanceConnected:
-                                long[] userHolder = new long[ev.UserIdsSize];
-                                Marshal.Copy(ev.UserIds, userHolder, 0, (int)ev.UserIdsSize);
-                                ulong[] users = new ulong[ev.UserIdsSize];
-                                for (int i = 0; i < users.Length; i++)
-                                {
-                                    users[i] = (ulong)userHolder[i];
-                                }
-                                userLists[ev.ChannelId] = new List<ulong>(users);
+                                userLists[ev.ChannelId] = new List<ulong>(ev.UserIds);
                                 break;
 
                             case Multiplex.MultiplexEventType.InstanceUserUpdate:
@@ -132,12 +109,12 @@ namespace Megatowel.Multiplex
                                     if (ev.InstanceId != 0)
                                     {
                                         userLists[ev.ChannelId].Add(ev.FromUserId);
-                                        OnUserConnectEvent?.Invoke(new MultiplexEvent(ev.FromUserId, Encoding.UTF8.GetString(info), new MultiplexData(data), ev.ChannelId));
+                                        OnUserConnectEvent?.Invoke(new MultiplexPacket(ev.FromUserId, Encoding.UTF8.GetString(ev.Info), new MultiplexData(ev.Data), ev.ChannelId));
                                     }
                                     else
                                     {
                                         userLists[ev.ChannelId].Remove(ev.FromUserId);
-                                        OnUserDisconnectEvent?.Invoke(new MultiplexEvent(ev.FromUserId, Encoding.UTF8.GetString(info), new MultiplexData(data), ev.ChannelId));
+                                        OnUserDisconnectEvent?.Invoke(new MultiplexPacket(ev.FromUserId, Encoding.UTF8.GetString(ev.Info), new MultiplexData(ev.Data), ev.ChannelId));
                                     }
                                 }
                                 break;
@@ -147,7 +124,7 @@ namespace Megatowel.Multiplex
                     {
                         if (ev.Error != MultiplexErrors.NoEvent)
                         {
-                            Multiplex.c_disconnect(multiplex, 2500);
+                            multiplex.Disconnect(2500);
                             OnError?.Invoke(ev.Error);
                             throw new MultiplexException("An error occurred: " + ev.Error);
                         }
@@ -157,27 +134,27 @@ namespace Megatowel.Multiplex
                         }
                     }
                 }
-                if (multiplex.ToInt64() != 0)
+                if (multiplex.connected)
                 {
                     for (int i = 0; i < sendQueue.Count; i++)
                     {
-                        MultiplexEvent sev;
+                        MultiplexPacket sev;
                         if (sendQueue.TryDequeue(out sev))
                         {
                             byte[] infoAsBytes = Encoding.UTF8.GetBytes(sev.Info);
-                            Multiplex.c_send(multiplex, sev.Data.bytes, (uint)sev.Data.bytes.Length, infoAsBytes, (uint)infoAsBytes.Length, sev.Channel, (int)sev.Flags);
+                            multiplex.Send(sev.Data.bytes, infoAsBytes, sev.Channel, sev.Flags);
                         }
                     }
                 }
             }
             catch (Exception e)
             {
-                Multiplex.c_destroy(multiplex);
+                multiplex.Disconnect(100);
                 MTDebug.LogError(e);
             }
         }
 
-        public static void Send(MultiplexEvent ev)
+        public static void Send(MultiplexPacket ev)
         {
             sendQueue.Enqueue(ev);
         }
@@ -194,20 +171,9 @@ namespace Megatowel.Multiplex
         }
     }
 
-    [Serializable]
-    public class MultiplexException : Exception
+    public struct MultiplexPacket
     {
-        public MultiplexException() { }
-        public MultiplexException(string message) : base(message) { }
-        public MultiplexException(string message, Exception inner) : base(message, inner) { }
-        protected MultiplexException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
-    }
-
-    public struct MultiplexEvent
-    {
-        internal MultiplexEvent(ulong user, string info, MultiplexData data, uint channel, MultiplexSendFlags flags = 0)
+        internal MultiplexPacket(ulong user, string info, MultiplexData data, uint channel, MultiplexSendFlags flags = 0)
         {
             User = user;
             Info = info;
@@ -216,7 +182,7 @@ namespace Megatowel.Multiplex
             Flags = flags;
         }
 
-        public MultiplexEvent(string info, MultiplexData data, uint channel, MultiplexSendFlags flags = 0)
+        public MultiplexPacket(string info, MultiplexData data, uint channel, MultiplexSendFlags flags = 0)
         {
             User = 0;
             Info = info;
@@ -241,18 +207,4 @@ namespace Megatowel.Multiplex
         public byte[] bytes;
         public string text => Encoding.UTF8.GetString(bytes);
     }
-
-    public enum MultiplexSendFlags
-    {
-        MT_SEND_RELIABLE = 1 << 0,
-        MT_NO_FLUSH = 1 << 1
-    };
-
-    public enum MultiplexErrors
-    {
-        None = 0,
-        ENet,
-        NoEvent,
-        FailedRelay
-    };
 }
