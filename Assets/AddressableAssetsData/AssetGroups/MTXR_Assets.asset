@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: MTXR_Assets
+  m_EditorClassIdentifier: 
+  m_GroupName: MTXR_Assets
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 49360b0089dc49f409b7d3f2be0c525d
+  m_SerializeEntries:
+  - m_GUID: bb31415f81dfffd4199b74adfc9726a1
+    m_Address: MTXR_Player
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Player
+    m_MainAsset: {fileID: 7924244275635188137, guid: bb31415f81dfffd4199b74adfc9726a1, type: 3}
+    m_TargetAsset: {fileID: 7924244275635188137, guid: bb31415f81dfffd4199b74adfc9726a1, type: 3}
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: a859de129630398439bddcdf01567ef3, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: a13b7c69fc3166c4d9678ec4e8cb1dad, type: 2}
+    - {fileID: 11400000, guid: aa3437be1dfc3134c9c4b3ab5b40d5a4, type: 2}
