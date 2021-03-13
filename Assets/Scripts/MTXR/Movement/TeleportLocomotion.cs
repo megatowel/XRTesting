@@ -164,7 +164,7 @@ namespace MTXR.Player.Movement
                 if (contacted)
                 {
                     // Is the angle of our hit too steep?
-                    if (Vector3.Angle(_teleportCastHit.normal, Player.transform.up) < MaxTeleportSteepness)
+                    if (Vector3.Angle(_teleportCastHit.normal, Player.transform.up) <= MaxTeleportSteepness)
                     {
                         // A valid hit has been made.
                         _state |= TeleportState.Valid;
