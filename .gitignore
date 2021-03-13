@@ -59,7 +59,10 @@ ExportedObj/
 *.pdb.meta
 *.mdb.meta
 
+# DO NOT REMOVE THESE! FMOD editor user cache and logs
+FMODStudioCache.asset
 fmod_editor.log
+FMOD/Cache/
 
 # Unity3D generated file on crash reports
 sysinfo.txt
