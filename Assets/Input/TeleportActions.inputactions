@@ -1,0 +1,44 @@
+{
+    "name": "TeleportActions",
+    "maps": [
+        {
+            "name": "Teleportation",
+            "id": "3d1022ea-5680-436e-8108-abd82457f2cb",
+            "actions": [
+                {
+                    "name": "Teleport",
+                    "type": "Button",
+                    "id": "41801601-fecc-49e0-bdfe-92227df54b51",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "9a9a8e74-22d7-4db3-8f29-5fc49c417b92",
+                    "path": "<OculusTouchController>{LeftHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Teleport",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e21f4e5c-f225-477d-966c-62b3b95fac2a",
+                    "path": "<WMRSpatialController>/touchpadClicked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Teleport",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

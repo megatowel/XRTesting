@@ -1,0 +1,155 @@
+{
+    "name": "PlayerActions",
+    "maps": [
+        {
+            "name": "Debug",
+            "id": "52fa52e9-0a96-4e8a-8ea6-9a6e969ddacf",
+            "actions": [
+                {
+                    "name": "DebugAction",
+                    "type": "Button",
+                    "id": "3b4023e8-ce01-4dc2-8970-a2e20ec31e50",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "91ec0af3-c791-43c9-8c9a-f4355f5ec695",
+                    "path": "<XRController>{RightHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DebugAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Base",
+            "id": "0b541c4e-f844-48bd-a5b7-934c32a7eeeb",
+            "actions": [
+                {
+                    "name": "LeftHandPosition",
+                    "type": "Value",
+                    "id": "9a38bedf-fc00-4c2d-82bb-8818557f1aa1",
+                    "expectedControlType": "Vector3",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "LeftHandRotation",
+                    "type": "Value",
+                    "id": "5e0c8cf8-ec4b-4790-b20a-f8bdcab21bdf",
+                    "expectedControlType": "Quaternion",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "RightHandPosition",
+                    "type": "Value",
+                    "id": "33f6bc8a-6964-4c40-81ec-1c536b9399ed",
+                    "expectedControlType": "Vector3",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "RightHandRotation",
+                    "type": "Value",
+                    "id": "cd3c9c47-6790-44dd-953d-e000378b74eb",
+                    "expectedControlType": "Quaternion",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "HeadPosition",
+                    "type": "Value",
+                    "id": "4213fc5b-abf9-4963-b5cc-17e15398e0fd",
+                    "expectedControlType": "Vector3",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "HeadRotation",
+                    "type": "Value",
+                    "id": "9a48194a-2cd8-4446-8b16-6504a8750db1",
+                    "expectedControlType": "Quaternion",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "5d0b8381-5a65-40ff-80ca-0fd6e4e6ee31",
+                    "path": "<XRController>{LeftHand}/devicePosition",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftHandPosition",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "afc1cb9d-0746-4cfb-864c-89aed17e9339",
+                    "path": "<XRController>{RightHand}/devicePosition",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightHandPosition",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "804db6f9-4f37-44d0-b9ac-a62c06dacb6b",
+                    "path": "<XRHMD>/devicePosition",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HeadPosition",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "83ff4c5d-ae83-43b0-ac3f-c71714101363",
+                    "path": "<XRController>{LeftHand}/deviceRotation",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftHandRotation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9dd21b44-38eb-4164-a32f-13924472971a",
+                    "path": "<XRController>{RightHand}/deviceRotation",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightHandRotation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e8f865e5-45d7-433d-9e24-5a817410c0fb",
+                    "path": "<XRHMD>/deviceRotation",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HeadRotation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
