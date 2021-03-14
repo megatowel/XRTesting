@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3006891545170511468}
   m_Layer: 6
   m_Name: RightHandRigidbody
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -117,7 +117,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2003904523275954716}
-  - component: {fileID: 5511353148089718316}
+  - component: {fileID: 3656596722280714695}
   m_Layer: 6
   m_Name: TrackingSpace
   m_TagString: Untagged
@@ -144,7 +144,7 @@ Transform:
   m_Father: {fileID: 7924244275635188136}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5511353148089718316
+--- !u!114 &3656596722280714695
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -153,7 +153,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1916832710603005156}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f004314794089f47bb89a8e263d669c, type: 3}
+  m_Script: {fileID: 11500000, guid: b0bd0514e6254284085bbaf8136cbdfd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Player: {fileID: 756852354}
@@ -203,7 +203,7 @@ GameObject:
   - component: {fileID: 8219489021789629404}
   m_Layer: 6
   m_Name: LeftHand
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -285,7 +285,7 @@ GameObject:
   - component: {fileID: 6717969629178951911}
   m_Layer: 6
   m_Name: LeftHandRigidbody
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -688,7 +688,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7924244275635188137}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05acc5ec4553a1a4a9979949ed6c5db2, type: 3}
+  m_Script: {fileID: 11500000, guid: 17bb394e35087df48bc46d93774cd2cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Head: {fileID: 666627494450177814}
@@ -708,7 +708,7 @@ GameObject:
   - component: {fileID: 7924244275723870420}
   m_Layer: 6
   m_Name: RightHand
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -951,7 +951,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7924244276017058320}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55eabd16c86ed5947b2ae96e2a22e0f3, type: 3}
+  m_Script: {fileID: 11500000, guid: f1fc0be8a8ed4a842a02451e0c5db27b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Camera: {fileID: 7924244276017058333}
