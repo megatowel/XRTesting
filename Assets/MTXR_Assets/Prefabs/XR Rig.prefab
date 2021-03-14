@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2003904523275954716}
   - component: {fileID: 5511353148089718316}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TrackingSpace
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -58,7 +58,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2750285004096333485}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Nametag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,8 +92,7 @@ GameObject:
   - component: {fileID: 2406476350146546400}
   - component: {fileID: 8219489021789629404}
   - component: {fileID: 1595384352905173828}
-  - component: {fileID: 6033290078794663051}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: LeftHand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -179,51 +178,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &6033290078794663051
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4327488344706901371}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ad6c71c44e02874d964bc6e80706106, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackingType: 0
-  m_PositionAction:
-    m_Name: Position
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 04c403b0-9bd6-41e5-8241-b60ad02fe4fd
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: 09817414-9b40-4aea-bf9a-3d0a446ad634
-      m_Path: <XRController>{LeftHand}/devicePosition
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Position
-      m_Flags: 0
-  m_RotationAction:
-    m_Name: Rotation
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 1910f2e6-fbc3-40cf-a46c-d0595a6e69e0
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: 1f2927ba-2cb9-499d-9f9f-d1fad182aae4
-      m_Path: <XRController>{LeftHand}/deviceRotation
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Rotation
-      m_Flags: 0
 --- !u!1 &7589469572848868999
 GameObject:
   m_ObjectHideFlags: 0
@@ -236,7 +190,7 @@ GameObject:
   - component: {fileID: 4495488040411728343}
   - component: {fileID: 9174905167194134921}
   - component: {fileID: 4912985312724263688}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Head Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -286,6 +240,8 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 33312929f9de8ad429d542c8f29f3c66, type: 2}
+  - {fileID: 2100000, guid: 19b3bf567ef13d4429fa6ab26c341f72, type: 2}
+  - {fileID: 2100000, guid: 7e1d8c0968fc16642b6812690e51d0a2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -331,7 +287,7 @@ GameObject:
   - component: {fileID: 7047827844680534069}
   - component: {fileID: 1397663387257779546}
   - component: {fileID: 511557885062320153}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -499,9 +455,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7924244275635188136}
   - component: {fileID: 756852354}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: XR Rig
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -550,8 +506,7 @@ GameObject:
   - component: {fileID: 7924244275723870423}
   - component: {fileID: 7924244275723870420}
   - component: {fileID: 7924244275723870411}
-  - component: {fileID: 7924244275723870410}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: RightHand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -637,51 +592,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &7924244275723870410
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7924244275723870409}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ad6c71c44e02874d964bc6e80706106, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackingType: 0
-  m_PositionAction:
-    m_Name: Position
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 04c403b0-9bd6-41e5-8241-b60ad02fe4fd
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: 09817414-9b40-4aea-bf9a-3d0a446ad634
-      m_Path: <XRController>{RightHand}/devicePosition
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Position
-      m_Flags: 0
-  m_RotationAction:
-    m_Name: Rotation
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 1910f2e6-fbc3-40cf-a46c-d0595a6e69e0
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: 1f2927ba-2cb9-499d-9f9f-d1fad182aae4
-      m_Path: <XRController>{RightHand}/deviceRotation
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Rotation
-      m_Flags: 0
 --- !u!1 &7924244276017058320
 GameObject:
   m_ObjectHideFlags: 0
@@ -697,7 +607,7 @@ GameObject:
   - component: {fileID: 7924244276017058334}
   - component: {fileID: 666627494450177814}
   - component: {fileID: 5543555049354415915}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Head
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -938,9 +848,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -5711320918630054040, guid: 21e8c2f0177c5514bbc451c56b51a2bc, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: -5135115944711375252, guid: 21e8c2f0177c5514bbc451c56b51a2bc, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: -3288859251718279690, guid: 21e8c2f0177c5514bbc451c56b51a2bc, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 21e8c2f0177c5514bbc451c56b51a2bc, type: 3}
       propertyPath: m_Name
       value: TrafficCone
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 21e8c2f0177c5514bbc451c56b51a2bc, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 21e8c2f0177c5514bbc451c56b51a2bc, type: 3}

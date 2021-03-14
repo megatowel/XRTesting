@@ -6,7 +6,8 @@ using UnityEngine;
 namespace Megatowel.NetObject
 {
     [Flags]
-    enum NetFlags : byte {
+    internal enum NetFlags : byte
+    {
         CreateFree = 0, // Mark object to be made and shared freely
         // Free objects will always persist until the instance is gone or object is deleted.
         CreateExclusive = 1 << 0, // Mark object to be made with only the client as the authority (owner).
@@ -14,82 +15,101 @@ namespace Megatowel.NetObject
         RequestAuthority = 1 << 1, // Update object's authority
         NoStore = 1 << 2
     }
-    class NetObject
+
+    public class NetObject : IDisposable
     {
         public Guid id;
         public bool tracking = true;
         private NetFlags _flags;
-        public NetFlags flags {
-            get {
-                if (!tracking && !_flags.HasFlag(NetFlags.NoStore)) {
+        internal NetFlags flags
+        {
+            get
+            {
+                if (!tracking && (_flags | NetFlags.NoStore) == 0)
+                {
                     _flags |= NetFlags.NoStore;
                 }
                 return _flags;
             }
-            set {
+            set
+            {
                 _flags = value;
             }
         }
-        public ulong authority {
-            get {
+        public ulong authority
+        {
+            get
+            {
                 if (submittedfields.ContainsKey(0))
                     return BitConverter.ToUInt64(submittedfields[0], 0);
                 else
                     return 0;
             }
         }
-        public Dictionary<byte, byte[]> fields = new Dictionary<byte, byte[]>(); 
-        public Dictionary<byte, byte[]> submittedfields = new Dictionary<byte, byte[]>(); 
-        private static Dictionary<Guid, NetObject> instances = new Dictionary<Guid, NetObject>(); 
-        private MemoryStream fieldstream = new MemoryStream();
-        private BinaryWriter fieldbytes;
+        public Dictionary<byte, byte[]> fields = new Dictionary<byte, byte[]>();
+        public Dictionary<byte, byte[]> submittedfields = new Dictionary<byte, byte[]>();
+        private static Dictionary<Guid, NetObject> _instances = new Dictionary<Guid, NetObject>();
+        private MemoryStream _fieldStream = new MemoryStream();
+        private BinaryWriter _fieldBytes;
+
         // Generic Constructor for just making a new object.
-        public NetObject () {
+        public NetObject()
+        {
             id = Guid.NewGuid();
-            instances[id] = this;
-            fieldbytes = new BinaryWriter(fieldstream);
+            _instances[id] = this;
+            _fieldBytes = new BinaryWriter(_fieldStream);
         }
 
-        private NetObject (Guid objectId) {
+        private NetObject(Guid objectId)
+        {
             id = objectId;
-            fieldbytes = new BinaryWriter(fieldstream);
+            _fieldBytes = new BinaryWriter(_fieldStream);
         }
 
-        public static NetObject GetNetObject(Guid objectId) {
-            if (instances.ContainsKey(objectId)) {
-                return instances[objectId];
+        public static NetObject GetNetObject(Guid objectId)
+        {
+            if (_instances.ContainsKey(objectId))
+            {
+                return _instances[objectId];
             }
-            else {
+            else
+            {
                 NetObject newinstance = new NetObject(objectId);
-                instances[objectId] = newinstance;
+                _instances[objectId] = newinstance;
                 return newinstance;
             }
         }
 
-        public void SubmitToBinaryWriters(BinaryWriter data, BinaryWriter info, NetFlags flags, bool submitAll = false) {
-            fieldstream.SetLength(0);
-            foreach (KeyValuePair<byte, byte[]> pair in fields) {
-                if (!submittedfields.ContainsKey(pair.Key) || !submittedfields[pair.Key].Equals(pair.Value)) {
-                    fieldbytes.Write(pair.Key);
-                    fieldbytes.Write((ushort)pair.Value.Length);
-                    fieldbytes.Write(pair.Value);
+        internal void SubmitToBinaryWriters(BinaryWriter data, BinaryWriter info, NetFlags flags, bool submitAll = false)
+        {
+            _fieldStream.SetLength(0);
+            foreach (KeyValuePair<byte, byte[]> pair in fields)
+            {
+                if (!submittedfields.ContainsKey(pair.Key) || !submittedfields[pair.Key].Equals(pair.Value))
+                {
+                    _fieldBytes.Write(pair.Key);
+                    _fieldBytes.Write((ushort)pair.Value.Length);
+                    _fieldBytes.Write(pair.Value);
                     // redoing this submitted fields thing. it may just end up being "server side" fields
                     // submittedfields[pair.Key] = pair.Value;
                 }
             }
             info.Write(id.ToByteArray());
             info.Write((byte)flags);
-            info.Write((ushort)fieldstream.Position);
-            data.Write(fieldstream.ToArray());
+            info.Write((ushort)_fieldStream.Position);
+            data.Write(_fieldStream.ToArray());
         }
 
-        public static IEnumerable<NetObject> ReadFromBinaryReaders(BinaryReader data, BinaryReader info) {
-            if (((info.BaseStream.Length - info.BaseStream.Position) % 19) != 0) {
+        internal static IEnumerable<NetObject> ReadFromBinaryReaders(BinaryReader data, BinaryReader info)
+        {
+            if (((info.BaseStream.Length - info.BaseStream.Position) % 19) != 0)
+            {
                 throw new DataMisalignedException();
             }
             long lastPosition;
             ushort dataLength;
-            while (info.BaseStream.Length != info.BaseStream.Position) {
+            while (info.BaseStream.Length != info.BaseStream.Position)
+            {
                 Guid remoteId = new Guid(info.ReadBytes(16));
                 NetObject remoteObj = NetObject.GetNetObject(remoteId);
                 info.ReadByte(); // ignore it for now ;/
@@ -97,12 +117,18 @@ namespace Megatowel.NetObject
 
                 lastPosition = data.BaseStream.Position;
                 dataLength = info.ReadUInt16();
-                while ((data.BaseStream.Position - lastPosition) < dataLength) {
+                while ((data.BaseStream.Position - lastPosition) < dataLength)
+                {
                     byte key = data.ReadByte();
                     remoteObj.submittedfields[key] = data.ReadBytes(data.ReadUInt16());
                 }
                 yield return remoteObj;
             }
+        }
+
+        public void Dispose() {
+            _fieldStream.Dispose();
+            _fieldBytes.Dispose();
         }
     }
 }

@@ -92,6 +92,22 @@ public class @PlayerActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Quaternion"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""LeftHandTracked"",
+                    ""type"": ""Value"",
+                    ""id"": ""4d8adc1d-a5a1-4321-b3d0-0284b1c21fc8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""RightHandTracked"",
+                    ""type"": ""Value"",
+                    ""id"": ""8f359040-929f-4efc-adcb-d15fcd87b3fc"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -160,6 +176,28 @@ public class @PlayerActions : IInputActionCollection, IDisposable
                     ""action"": ""HeadRotation"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1bb5ec0d-7ece-4e06-b407-c55c993de290"",
+                    ""path"": ""<XRController>{LeftHand}/isTracked"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LeftHandTracked"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cd38bad5-41e0-46a9-9d27-6e02afdb7182"",
+                    ""path"": ""<XRController>{RightHand}/isTracked"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RightHandTracked"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -177,6 +215,8 @@ public class @PlayerActions : IInputActionCollection, IDisposable
         m_Base_RightHandRotation = m_Base.FindAction("RightHandRotation", throwIfNotFound: true);
         m_Base_HeadPosition = m_Base.FindAction("HeadPosition", throwIfNotFound: true);
         m_Base_HeadRotation = m_Base.FindAction("HeadRotation", throwIfNotFound: true);
+        m_Base_LeftHandTracked = m_Base.FindAction("LeftHandTracked", throwIfNotFound: true);
+        m_Base_RightHandTracked = m_Base.FindAction("RightHandTracked", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -265,6 +305,8 @@ public class @PlayerActions : IInputActionCollection, IDisposable
     private readonly InputAction m_Base_RightHandRotation;
     private readonly InputAction m_Base_HeadPosition;
     private readonly InputAction m_Base_HeadRotation;
+    private readonly InputAction m_Base_LeftHandTracked;
+    private readonly InputAction m_Base_RightHandTracked;
     public struct BaseActions
     {
         private @PlayerActions m_Wrapper;
@@ -275,6 +317,8 @@ public class @PlayerActions : IInputActionCollection, IDisposable
         public InputAction @RightHandRotation => m_Wrapper.m_Base_RightHandRotation;
         public InputAction @HeadPosition => m_Wrapper.m_Base_HeadPosition;
         public InputAction @HeadRotation => m_Wrapper.m_Base_HeadRotation;
+        public InputAction @LeftHandTracked => m_Wrapper.m_Base_LeftHandTracked;
+        public InputAction @RightHandTracked => m_Wrapper.m_Base_RightHandTracked;
         public InputActionMap Get() { return m_Wrapper.m_Base; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -302,6 +346,12 @@ public class @PlayerActions : IInputActionCollection, IDisposable
                 @HeadRotation.started -= m_Wrapper.m_BaseActionsCallbackInterface.OnHeadRotation;
                 @HeadRotation.performed -= m_Wrapper.m_BaseActionsCallbackInterface.OnHeadRotation;
                 @HeadRotation.canceled -= m_Wrapper.m_BaseActionsCallbackInterface.OnHeadRotation;
+                @LeftHandTracked.started -= m_Wrapper.m_BaseActionsCallbackInterface.OnLeftHandTracked;
+                @LeftHandTracked.performed -= m_Wrapper.m_BaseActionsCallbackInterface.OnLeftHandTracked;
+                @LeftHandTracked.canceled -= m_Wrapper.m_BaseActionsCallbackInterface.OnLeftHandTracked;
+                @RightHandTracked.started -= m_Wrapper.m_BaseActionsCallbackInterface.OnRightHandTracked;
+                @RightHandTracked.performed -= m_Wrapper.m_BaseActionsCallbackInterface.OnRightHandTracked;
+                @RightHandTracked.canceled -= m_Wrapper.m_BaseActionsCallbackInterface.OnRightHandTracked;
             }
             m_Wrapper.m_BaseActionsCallbackInterface = instance;
             if (instance != null)
@@ -324,6 +374,12 @@ public class @PlayerActions : IInputActionCollection, IDisposable
                 @HeadRotation.started += instance.OnHeadRotation;
                 @HeadRotation.performed += instance.OnHeadRotation;
                 @HeadRotation.canceled += instance.OnHeadRotation;
+                @LeftHandTracked.started += instance.OnLeftHandTracked;
+                @LeftHandTracked.performed += instance.OnLeftHandTracked;
+                @LeftHandTracked.canceled += instance.OnLeftHandTracked;
+                @RightHandTracked.started += instance.OnRightHandTracked;
+                @RightHandTracked.performed += instance.OnRightHandTracked;
+                @RightHandTracked.canceled += instance.OnRightHandTracked;
             }
         }
     }
@@ -340,5 +396,7 @@ public class @PlayerActions : IInputActionCollection, IDisposable
         void OnRightHandRotation(InputAction.CallbackContext context);
         void OnHeadPosition(InputAction.CallbackContext context);
         void OnHeadRotation(InputAction.CallbackContext context);
+        void OnLeftHandTracked(InputAction.CallbackContext context);
+        void OnRightHandTracked(InputAction.CallbackContext context);
     }
 }

@@ -6,17 +6,9 @@ using Megatowel.NetObject;
 using Megatowel.Multiplex.Extensions;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(NetView))]
-public class NetTest : MonoBehaviour
+public class NetTest : NetBehaviour
 {
-    NetView netView;
-    // Start is called before the first frame update
-    void Start()
-    {
-        netView = GetComponent<NetView>();
-    }
-
-    // Update is called once per frame
+    // Update is called once per frame, as you might know by now :3
     void Update()
     {
         if (Keyboard.current.cKey.isPressed)
@@ -26,14 +18,14 @@ public class NetTest : MonoBehaviour
         }
         if (netView.IsOwned)
         {
-            netView.obj.fields[1] = transform.position.ToBytes();
-            netView.obj.fields[2] = transform.rotation.ToBytes();
+            netView.netObject.fields[1] = transform.position.ToBytes();
+            netView.netObject.fields[2] = transform.rotation.ToBytes();
             netView.Submit();
         }
         else
         {
-            transform.position = netView.obj.submittedfields[1].FromBytes<Vector3>();
-            transform.rotation = netView.obj.submittedfields[2].FromBytes<Quaternion>();
+            transform.position = netView.netObject.submittedfields[1].FromBytes<Vector3>();
+            transform.rotation = netView.netObject.submittedfields[2].FromBytes<Quaternion>();
         }
     }
 }

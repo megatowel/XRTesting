@@ -8,20 +8,20 @@ using Megatowel.Multiplex;
 
 namespace Megatowel.NetObject
 {
-    class NetView : MonoBehaviour
+    public class NetView : MonoBehaviour
     {
         public bool SceneObject;
         public bool Exclusive;
         public string SceneObjectId;
 
-        public NetObject obj;
-        private bool HasInit = false;
+        public NetObject netObject { get; private set; }
+        private bool _initialized;
 
         public bool IsOwned
         {
             get
             {
-                return MultiplexManager.SelfId == obj.authority;
+                return MultiplexManager.SelfId == netObject.authority;
             }
         }
 
@@ -30,43 +30,43 @@ namespace Megatowel.NetObject
             if (SceneObject)
             {
                 Guid objId = new Guid(SceneObjectId);
-                obj = NetObject.GetNetObject(objId);
+                netObject = NetObject.GetNetObject(objId);
                 NetManager.allViews[objId] = this;
-                HasInit = true;
+                _initialized = true;
             }
-            
-            obj.SubmitObject(Exclusive ? NetFlags.CreateExclusive : NetFlags.CreateFree);
+
+            netObject.SubmitObject(Exclusive ? NetFlags.CreateExclusive : NetFlags.CreateFree);
         }
 
         // TODO: remove temporary submission method, as this should be automatic.
         // also, we should have neat methods for sending and getting stuff.
         public void Submit(bool getOwner = false)
         {
-            obj.SubmitObject(getOwner ? NetFlags.RequestAuthority : NetFlags.CreateFree);
+            netObject.SubmitObject(getOwner ? NetFlags.RequestAuthority : NetFlags.CreateFree);
         }
 
         private void OnDisable()
         {
 
-            HasInit = false;
+            _initialized = false;
         }
 
         internal void NetStart()
         {
             if (!SceneObject)
             {
-                if (HasInit)
+                if (_initialized)
                 {
                     throw new InvalidOperationException("Net View is already active!");
                 }
-                obj = NetObject.GetNetObject(Guid.NewGuid());
-                obj.SubmitObject(Exclusive ? NetFlags.CreateExclusive : NetFlags.RequestAuthority);
-                HasInit = true;
+                netObject = NetObject.GetNetObject(Guid.NewGuid());
+                netObject.SubmitObject(Exclusive ? NetFlags.CreateExclusive : NetFlags.RequestAuthority);
+                _initialized = true;
             }
             else
             {
                 throw new InvalidOperationException("Scene Objects can't be instantiated.");
-            }   
+            }
         }
 
         private void Reset()

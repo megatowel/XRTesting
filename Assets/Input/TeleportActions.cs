@@ -31,7 +31,7 @@ public class @TeleportActions : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""9a9a8e74-22d7-4db3-8f29-5fc49c417b92"",
-                    ""path"": ""<OculusTouchController>{LeftHand}/primaryButton"",
+                    ""path"": ""<OculusTouchController>/primaryButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

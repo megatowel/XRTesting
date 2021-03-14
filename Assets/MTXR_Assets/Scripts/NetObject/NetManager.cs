@@ -1,35 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
 using Zenject;
 using Megatowel.Multiplex;
-using UnityEngine;
-using Megatowel.Multiplex.Extensions;
 
 namespace Megatowel.NetObject
 {
-    internal class NetManager : IInitializable, IDisposable
+    internal class NetManager : IInitializable
     {
         internal static Dictionary<Guid, NetView> allViews = new Dictionary<Guid, NetView>();
         internal static List<NetObject> toSubmit = new List<NetObject>();
 
-        private readonly MemoryStream datareadmem = new MemoryStream();
-        private readonly MemoryStream inforeadmem = new MemoryStream();
-        private readonly MemoryStream datawritemem = new MemoryStream();
-        private readonly MemoryStream infowritemem = new MemoryStream();
-        private BinaryReader dataread;
-        private BinaryReader inforead;
-        private BinaryWriter datawrite;
-        private BinaryWriter infowrite;
+        private readonly MemoryStream _dataReadMem = new MemoryStream();
+        private readonly MemoryStream _infoReadMem = new MemoryStream();
+        private readonly MemoryStream _dataWriteMem = new MemoryStream();
+        private readonly MemoryStream _infoWriteMem = new MemoryStream();
+
+        private BinaryReader _dataRead;
+        private BinaryReader _infoRead;
+        private BinaryWriter _dataWrite;
+        private BinaryWriter _infoWrite;
 
         public void Initialize()
         {
-            dataread = new BinaryReader(datareadmem);
-            inforead = new BinaryReader(inforeadmem);
-            datawrite = new BinaryWriter(datawritemem);
-            infowrite = new BinaryWriter(infowritemem);
+            _dataRead = new BinaryReader(_dataReadMem);
+            _infoRead = new BinaryReader(_infoReadMem);
+            _dataWrite = new BinaryWriter(_dataWriteMem);
+            _infoWrite = new BinaryWriter(_infoWriteMem);
             MultiplexManager.OnSetup += () =>
             {
                 MultiplexManager.NetworkTick += NetworkTick;
@@ -39,16 +37,22 @@ namespace Megatowel.NetObject
 
         private void OnNetEvent(MultiplexPacket packet)
         {
-            datareadmem.SetLength(0);
-            datareadmem.Write(packet.Data.bytes, 0, packet.Data.bytes.Length);
-            inforeadmem.SetLength(0);
-            inforeadmem.Write(packet.Info.bytes, 0, packet.Info.bytes.Length);
-            datareadmem.Seek(0, SeekOrigin.Begin);
-            inforeadmem.Seek(0, SeekOrigin.Begin);
-            if (packet.Info.bytes.Length > 0 && inforead.ReadByte() == 1)
+            // Read data
+            _dataReadMem.SetLength(0);
+            _dataReadMem.Write(packet.Data.bytes, 0, packet.Data.bytes.Length);
+
+            // Read info
+            _infoReadMem.SetLength(0);
+            _infoReadMem.Write(packet.Info.bytes, 0, packet.Info.bytes.Length);
+
+            // Seek back to beginning
+            _dataReadMem.Seek(0, SeekOrigin.Begin);
+            _infoReadMem.Seek(0, SeekOrigin.Begin);
+
+            if (packet.Info.bytes.Length > 0 && _infoRead.ReadByte() == 1)
             {
-                dataread.ReadByte();
-                foreach (NetObject netobj in NetObject.ReadFromBinaryReaders(dataread, inforead))
+                _dataRead.ReadByte();
+                foreach (NetObject netobj in NetObject.ReadFromBinaryReaders(_dataRead, _infoRead))
                 {
                     // it changes objects anyway
                     //Debug.Log($"got {netobj.id} from {netobj.authority}");
@@ -58,30 +62,22 @@ namespace Megatowel.NetObject
 
         private void NetworkTick()
         {
-            datawritemem.SetLength(0);
-            infowritemem.SetLength(0);
-            datawrite.Write((byte)1);
-            infowrite.Write((byte)1);
+            _dataWriteMem.SetLength(0);
+            _infoWriteMem.SetLength(0);
+            _dataWrite.Write((byte)1);
+            _infoWrite.Write((byte)1);
 
             foreach (NetObject obj in toSubmit)
             {
-                obj.SubmitToBinaryWriters(datawrite, infowrite, obj.flags);
-                if (obj.flags.HasFlag(NetFlags.RequestAuthority))
-                {
-                    obj.flags &= ~NetFlags.RequestAuthority;
-                }
+                obj.SubmitToBinaryWriters(_dataWrite, _infoWrite, obj.flags);
+                obj.flags &= ~NetFlags.RequestAuthority;
             }
             if (toSubmit.Count() != 0)
             {
-                MultiplexManager.Send(new MultiplexPacket(new MultiplexData(infowritemem.ToArray()),
-                new MultiplexData(datawritemem.ToArray()), 1, MultiplexSendFlags.MT_SEND_RELIABLE));
+                MultiplexManager.Send(new MultiplexPacket(new MultiplexData(_infoWriteMem.ToArray()),
+                new MultiplexData(_dataWriteMem.ToArray()), 1, MultiplexSendFlags.Reliable));
                 toSubmit.Clear();
             }
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
         }
     }
 

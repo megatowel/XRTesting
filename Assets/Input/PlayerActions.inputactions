@@ -79,6 +79,22 @@
                     "expectedControlType": "Quaternion",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "LeftHandTracked",
+                    "type": "Value",
+                    "id": "4d8adc1d-a5a1-4321-b3d0-0284b1c21fc8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "RightHandTracked",
+                    "type": "Value",
+                    "id": "8f359040-929f-4efc-adcb-d15fcd87b3fc",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -145,6 +161,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "HeadRotation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1bb5ec0d-7ece-4e06-b407-c55c993de290",
+                    "path": "<XRController>{LeftHand}/isTracked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftHandTracked",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cd38bad5-41e0-46a9-9d27-6e02afdb7182",
+                    "path": "<XRController>{RightHand}/isTracked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightHandTracked",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -54,6 +54,8 @@ namespace MTXR.Player
         {
             LeftHand.transform.localPosition = _actions.Base.LeftHandPosition.ReadValue<Vector3>();
             LeftHand.transform.localRotation = _actions.Base.LeftHandRotation.ReadValue<Quaternion>();
+            RightHand.transform.localPosition = _actions.Base.RightHandPosition.ReadValue<Vector3>();
+            RightHand.transform.localRotation = _actions.Base.RightHandRotation.ReadValue<Quaternion>();
         }
 
         /// <summary> 

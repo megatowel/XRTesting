@@ -15,6 +15,7 @@ namespace Megatowel.Multiplex
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
+    
     public struct MultiplexEvent
     {
         public MultiplexEventType EventType;
@@ -38,7 +39,7 @@ namespace Megatowel.Multiplex
         public void Connect(string host, int port) {
             int result = MultiplexWrapper.c_setup(c_instance, Encoding.UTF8.GetBytes(host), port);
             if (result != 0) {
-                throw new MultiplexException();
+                throw new MultiplexException("Failed to connect to server.");
             }
             connected = true;
         }

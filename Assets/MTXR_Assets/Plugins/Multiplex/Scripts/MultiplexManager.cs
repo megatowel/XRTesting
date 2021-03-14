@@ -10,11 +10,11 @@ using UnityEngine;
 
 namespace Megatowel.Multiplex
 {
-    public class MultiplexManager : IInitializable, IDisposable, ITickable
+    public class MultiplexManager : IInitializable, ITickable
     {
         //sendrate
-        public const int sendrate = 30;
-        private float sendratedelta;
+        public const int sendRate = 30;
+        private float _sendRateDelta;
 
         public static event Action<MultiplexPacket> OnEvent;
         public static event Action<MultiplexErrors> OnError;
@@ -29,17 +29,25 @@ namespace Megatowel.Multiplex
         private static ConcurrentQueue<MultiplexPacket> sendQueue = new ConcurrentQueue<MultiplexPacket>();
         private static ConcurrentDictionary<uint, List<ulong>> userLists = new ConcurrentDictionary<uint, List<ulong>>();
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
         // MT
-        // private readonly string hostServer = "104.37.189.85";
+        // private readonly string hostAddress = "104.37.189.85";
         // private readonly int hostPort = 3000;
         // SOUP
-        private readonly string hostServer = "108.230.44.131";
+        private readonly string hostAddress = "108.230.44.131";
         private readonly int hostPort = 3000;
         // ;>
+#else
+        private readonly string hostAddress = "0.0.0.0";
+        private readonly int hostPort = 3000;
+#endif
 
         public void Initialize()
         {
-            Setup(hostServer);
+            if (!Setup(hostAddress)) 
+            {
+                return;
+            }
 
             OnSetup += () =>
             {
@@ -48,32 +56,44 @@ namespace Megatowel.Multiplex
 
             OnError += (error) =>
             {
-                Setup(hostServer);
+                Setup(hostAddress);
             };
 
             OnDisconnect += () =>
             {
-                Setup(hostServer);
+                Setup(hostAddress);
             };
 
             OnEvent += (MultiplexPacket ev) =>
             {
                 if (ev.Info.text == "chat")
                 {
-                    MTDebug.Log(ev.Data.text);
+                    MTDebug.Log($"<color=#F40496>[Multiplex Chat]</color> <b>{ev.User}</b>: \"{ev.Data.text}\"");
                 }
             };
         }
 
-        public void Setup(string host)
+        public bool Setup(string host)
         {
-            multiplex = new MultiplexClient();
-            multiplex.Connect(host, hostPort);
-            MTDebug.Log("Starting Multiplex");
-        }
-
-        public void Dispose()
-        {
+            try {
+                MTDebug.Log("Starting Multiplex");
+                multiplex = new MultiplexClient();
+                multiplex.Connect(host, hostPort);
+                return true;
+            }
+            catch (Exception e) 
+            {
+                if (e.GetType() == typeof(MultiplexException)) 
+                {
+                    MTDebug.LogError(e);
+                }
+                else 
+                {
+                    Debug.LogError(e);    
+                }
+                return false;
+            }
+            
         }
 
         private void Process()
@@ -160,10 +180,10 @@ namespace Megatowel.Multiplex
 
         public void Tick()
         {
-            sendratedelta += Time.unscaledDeltaTime;
-            if (sendratedelta > (float)sendrate / 1000)
+            _sendRateDelta += Time.unscaledDeltaTime;
+            if (_sendRateDelta > (float)sendRate / 1000)
             {
-                sendratedelta = 0f;
+                _sendRateDelta = 0f;
                 NetworkTick?.Invoke();
             }
             Process();

@@ -33,15 +33,17 @@ namespace Megatowel.Multiplex
         public static extern MultiplexWrapperEvent c_process_event(IntPtr multiplex, uint timeout);
     };
     
+    [Flags]
     public enum MultiplexSendFlags
     {
-        MT_SEND_RELIABLE = 1 << 0,
-        MT_NO_FLUSH = 1 << 1
+        None,
+        Reliable = 1 << 0,
+        NoFlush = 1 << 1
     };
 
     public enum MultiplexErrors
     {
-        None = 0,
+        None,
         ENet,
         NoEvent,
         FailedRelay

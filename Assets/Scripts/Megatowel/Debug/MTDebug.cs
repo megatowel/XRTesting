@@ -4,6 +4,10 @@ namespace Megatowel.Debugging
 {
     public static class MTDebug
     {
+        const string logPrefix = "<color=#812776>[MTLog]</color>:";
+        const string warnPrefix = "<color=#BA7240>[MTWarning]</color>:";
+        const string errPrefix = "<color=#BA2C40>[MTError]</color>:";
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
         public static void LoadDebugResources()
         {
@@ -22,7 +26,7 @@ namespace Megatowel.Debugging
         {
             if (Verbose)
             {
-                UnityEngine.Debug.Log($"[MTLog]: {value}");
+                UnityEngine.Debug.Log($"{logPrefix} {value}");
             }
         }
 
@@ -30,7 +34,7 @@ namespace Megatowel.Debugging
         {
             if (Verbose)
             {
-                UnityEngine.Debug.Log($"[MTLog]: {value}", context);
+                UnityEngine.Debug.Log($"{logPrefix} {value}", context);
             }
         }
 
@@ -38,7 +42,7 @@ namespace Megatowel.Debugging
         {
             if (Verbose)
             {
-                UnityEngine.Debug.LogWarning($"[MTWarning]: {value}");
+                UnityEngine.Debug.LogWarning($"{warnPrefix} {value}");
             }
         }
 
@@ -46,7 +50,7 @@ namespace Megatowel.Debugging
         {
             if (Verbose)
             {
-                UnityEngine.Debug.LogWarning($"[MTWarning]: {value}", context);
+                UnityEngine.Debug.LogWarning($"{warnPrefix} {value}", context);
             }
         }
 
@@ -54,7 +58,7 @@ namespace Megatowel.Debugging
         {
             if (Verbose)
             {
-                UnityEngine.Debug.LogError($"[MTError]: {value}");
+                UnityEngine.Debug.LogError($"{errPrefix} {value}");
             }
         }
 
@@ -62,18 +66,8 @@ namespace Megatowel.Debugging
         {
             if (Verbose)
             {
-                UnityEngine.Debug.LogError($"[MTError]: {value}", context);
+                UnityEngine.Debug.LogError($"{errPrefix} {value}", context);
             }
-        }
-
-        public static void LogUrgentError(object value)
-        {
-            UnityEngine.Debug.LogError($"[MTUrgentError]: {value}");
-        }
-
-        public static void LogUrgentError(object value, UnityEngine.Object context)
-        {
-            UnityEngine.Debug.LogError($"[MTUrgentError]: {value}", context);
         }
 
         public static void DrawLine(Vector3 start, Vector3 end, float lineWidth)
