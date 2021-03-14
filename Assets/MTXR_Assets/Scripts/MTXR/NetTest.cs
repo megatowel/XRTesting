@@ -33,7 +33,7 @@ public class NetTest : NetBehaviour
     void OnCollisionEnter(Collision collision) 
     {
         if (!netView.IsOwned) {
-            if (collision.gameObject == MTPlayer.LocalPlayer.LeftHand || collision.gameObject == MTPlayer.LocalPlayer.RightHand) 
+            if (collision.gameObject.layer == LayerMask.NameToLayer("Player")) 
             {
                 netView.Submit(true);
             }
