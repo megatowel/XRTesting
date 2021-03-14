@@ -59,6 +59,7 @@ namespace MTXR.Player.Movement
             _teleportMarker.GetComponent<Renderer>().material = _teleportLine.material;
             _teleportMarker.transform.localScale = new Vector3(0.5f, 0.05f, 0.5f);
             _teleportMarker.SetActive(false);
+            _teleportMarker.transform.parent = Player.transform;
 
 
             _actions = new TeleportActions();

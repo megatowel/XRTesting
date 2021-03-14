@@ -4,6 +4,7 @@ using UnityEngine;
 using Megatowel.Multiplex;
 using Megatowel.NetObject;
 using Megatowel.Multiplex.Extensions;
+using MTXR.Player;
 using UnityEngine.InputSystem;
 
 public class NetTest : NetBehaviour
@@ -26,6 +27,16 @@ public class NetTest : NetBehaviour
         {
             transform.position = netView.netObject.submittedfields[1].FromBytes<Vector3>();
             transform.rotation = netView.netObject.submittedfields[2].FromBytes<Quaternion>();
+        }
+    }
+
+    void OnCollisionEnter(Collision collision) 
+    {
+        if (!netView.IsOwned) {
+            if (collision.gameObject == MTPlayer.LocalPlayer.LeftHand || collision.gameObject == MTPlayer.LocalPlayer.RightHand) 
+            {
+                netView.Submit(true);
+            }
         }
     }
 }
