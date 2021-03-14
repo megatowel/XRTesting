@@ -71,7 +71,7 @@ namespace Megatowel.Multiplex
         {
             //if (ev.User != MultiplexManager.SelfId)
             //{
-            if (ev.Info == "game")
+            if (ev.Info.text == "game")
             {
                 MTDebug.Log("we gettin stuff");
                 for (int i = 0; i < ev.Data.bytes.Length; i++)

@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading;
 using Zenject;
 using UnityEngine;
-using Megatowel.Multiplex;
 
 namespace Megatowel.Multiplex
 {
@@ -30,10 +29,12 @@ namespace Megatowel.Multiplex
         private static ConcurrentQueue<MultiplexPacket> sendQueue = new ConcurrentQueue<MultiplexPacket>();
         private static ConcurrentDictionary<uint, List<ulong>> userLists = new ConcurrentDictionary<uint, List<ulong>>();
 
-        private readonly string hostServer = "104.37.189.85";
+        // MT
+        // private readonly string hostServer = "104.37.189.85";
+        // private readonly int hostPort = 3000;
+        // SOUP
+        private readonly string hostServer = "108.230.44.131";
         private readonly int hostPort = 3000;
-        // SOUP private readonly string hostServer = "108.230.44.131";
-        // SOUP private readonly int hostPort = 3000;
         // ;>
 
         public void Initialize()
@@ -57,7 +58,7 @@ namespace Megatowel.Multiplex
 
             OnEvent += (MultiplexPacket ev) =>
             {
-                if (ev.Info == "chat")
+                if (ev.Info.text == "chat")
                 {
                     MTDebug.Log(ev.Data.text);
                 }
@@ -86,35 +87,35 @@ namespace Megatowel.Multiplex
                     {
                         switch (ev.EventType)
                         {
-                            case Multiplex.MultiplexEventType.UserSetup:
+                            case MultiplexEventType.UserSetup:
                                 SelfId = ev.FromUserId;
                                 OnSetup?.Invoke();
                                 break;
 
-                            case Multiplex.MultiplexEventType.UserMessage:
-                                OnEvent?.Invoke(new MultiplexPacket(ev.FromUserId, Encoding.UTF8.GetString(ev.Info), new MultiplexData(ev.Data), ev.ChannelId));
+                            case MultiplexEventType.UserMessage:
+                                OnEvent?.Invoke(new MultiplexPacket(ev.FromUserId, new MultiplexData(ev.Info), new MultiplexData(ev.Data), ev.ChannelId));
                                 break;
 
-                            case Multiplex.MultiplexEventType.Disconnected:
+                            case MultiplexEventType.Disconnected:
                                 OnDisconnect?.Invoke();
                                 throw new MultiplexException("Lost connection to server.");
 
-                            case Multiplex.MultiplexEventType.InstanceConnected:
+                            case MultiplexEventType.InstanceConnected:
                                 userLists[ev.ChannelId] = new List<ulong>(ev.UserIds);
                                 break;
 
-                            case Multiplex.MultiplexEventType.InstanceUserUpdate:
+                            case MultiplexEventType.InstanceUserUpdate:
                                 if (ev.FromUserId != SelfId)
                                 {
                                     if (ev.InstanceId != 0)
                                     {
                                         userLists[ev.ChannelId].Add(ev.FromUserId);
-                                        OnUserConnectEvent?.Invoke(new MultiplexPacket(ev.FromUserId, Encoding.UTF8.GetString(ev.Info), new MultiplexData(ev.Data), ev.ChannelId));
+                                        OnUserConnectEvent?.Invoke(new MultiplexPacket(ev.FromUserId, new MultiplexData(ev.Info), new MultiplexData(ev.Data), ev.ChannelId));
                                     }
                                     else
                                     {
                                         userLists[ev.ChannelId].Remove(ev.FromUserId);
-                                        OnUserDisconnectEvent?.Invoke(new MultiplexPacket(ev.FromUserId, Encoding.UTF8.GetString(ev.Info), new MultiplexData(ev.Data), ev.ChannelId));
+                                        OnUserDisconnectEvent?.Invoke(new MultiplexPacket(ev.FromUserId, new MultiplexData(ev.Info), new MultiplexData(ev.Data), ev.ChannelId));
                                     }
                                 }
                                 break;
@@ -138,11 +139,9 @@ namespace Megatowel.Multiplex
                 {
                     for (int i = 0; i < sendQueue.Count; i++)
                     {
-                        MultiplexPacket sev;
-                        if (sendQueue.TryDequeue(out sev))
+                        if (sendQueue.TryDequeue(out MultiplexPacket sev))
                         {
-                            byte[] infoAsBytes = Encoding.UTF8.GetBytes(sev.Info);
-                            multiplex.Send(sev.Data.bytes, infoAsBytes, sev.Channel, sev.Flags);
+                            multiplex.Send(sev.Data.bytes, sev.Info.bytes, sev.Channel, sev.Flags);
                         }
                     }
                 }
@@ -173,9 +172,18 @@ namespace Megatowel.Multiplex
 
     public struct MultiplexPacket
     {
-        internal MultiplexPacket(ulong user, string info, MultiplexData data, uint channel, MultiplexSendFlags flags = 0)
+        internal MultiplexPacket(ulong user, MultiplexData info, MultiplexData data, uint channel, MultiplexSendFlags flags = 0)
         {
             User = user;
+            Info = info;
+            Data = data;
+            Channel = channel;
+            Flags = flags;
+        }
+
+        public MultiplexPacket(MultiplexData info, MultiplexData data, uint channel, MultiplexSendFlags flags = 0)
+        {
+            User = 0;
             Info = info;
             Data = data;
             Channel = channel;
@@ -185,14 +193,14 @@ namespace Megatowel.Multiplex
         public MultiplexPacket(string info, MultiplexData data, uint channel, MultiplexSendFlags flags = 0)
         {
             User = 0;
-            Info = info;
+            Info = new MultiplexData(Encoding.UTF8.GetBytes(info));
             Data = data;
             Channel = channel;
             Flags = flags;
         }
 
         public ulong User;
-        public string Info;
+        public MultiplexData Info;
         public MultiplexData Data;
         public uint Channel;
         public MultiplexSendFlags Flags;

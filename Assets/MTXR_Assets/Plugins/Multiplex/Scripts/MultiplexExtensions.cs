@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Megatowel.Multiplex.Extensions
 {
-    internal static class MultiplexExtensions
+    public static class MultiplexExtensions
     {
         // array/list serialization i guess
         public static byte[] ToBytes<T>(this T obj)
@@ -92,6 +92,14 @@ namespace Megatowel.Multiplex.Extensions
 
             Array.Copy(sourceArray, truncArray, truncArray.Length);
             return truncArray;
+        }
+
+        public static T FromBytes<T>(this byte[] obj)
+        {
+            BinaryReader reader = new BinaryReader(new MemoryStream());
+            reader.BaseStream.Write(obj, 0, obj.Length);
+            reader.BaseStream.Seek(0, SeekOrigin.Begin);
+            return reader.Read<T>();
         }
 
         // extend BinaryReader to read epicly

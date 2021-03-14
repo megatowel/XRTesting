@@ -58,7 +58,7 @@ namespace Megatowel.Multiplex
 
         void Process(MultiplexPacket ev)
         {
-            if (ev.Info == "opus")
+            if (ev.Info.text == "opus")
             {
                 if (!decoders.ContainsKey(ev.User))
                 {

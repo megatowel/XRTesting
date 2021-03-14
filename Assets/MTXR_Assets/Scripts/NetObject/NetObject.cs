@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Megatowel.NetObject
 {
@@ -51,6 +52,7 @@ namespace Megatowel.NetObject
 
         private NetObject (Guid objectId) {
             id = objectId;
+            fieldbytes = new BinaryWriter(fieldstream);
         }
 
         public static NetObject GetNetObject(Guid objectId) {
@@ -68,7 +70,7 @@ namespace Megatowel.NetObject
             fieldstream.SetLength(0);
             foreach (KeyValuePair<byte, byte[]> pair in fields) {
                 if (!submittedfields.ContainsKey(pair.Key) || !submittedfields[pair.Key].Equals(pair.Value)) {
-                    fieldbytes.Write((byte)pair.Key);
+                    fieldbytes.Write(pair.Key);
                     fieldbytes.Write((ushort)pair.Value.Length);
                     fieldbytes.Write(pair.Value);
                     submittedfields[pair.Key] = pair.Value;
