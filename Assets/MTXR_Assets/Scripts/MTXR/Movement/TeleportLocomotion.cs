@@ -42,10 +42,6 @@ namespace MTXR.Player.Movement
         private void Start()
         {
             ValidTeleportLayers = LayerMask.GetMask("Default");
-        }
-
-        private void OnEnable()
-        {
             _teleportLine = gameObject.AddComponent<LineRenderer>();
             _teleportLine.positionCount = 20;
             _teleportLine.widthMultiplier = 0.1f;
@@ -58,9 +54,8 @@ namespace MTXR.Player.Movement
             Destroy(_teleportMarker.GetComponent<Collider>());
             _teleportMarker.GetComponent<Renderer>().material = _teleportLine.material;
             _teleportMarker.transform.localScale = new Vector3(0.5f, 0.05f, 0.5f);
-            _teleportMarker.SetActive(false);
             _teleportMarker.transform.SetParent(Player.transform);
-
+            _teleportMarker.SetActive(false);
 
             _actions = new TeleportActions();
             _actions.Enable();
@@ -68,7 +63,7 @@ namespace MTXR.Player.Movement
             _actions.Teleportation.Teleport.canceled += FinishTeleport;
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
             _actions.Teleportation.Teleport.started -= StartTeleport;
             _actions.Teleportation.Teleport.canceled -= FinishTeleport;
