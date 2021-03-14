@@ -68,6 +68,7 @@ namespace Megatowel.NetObject
                 if (obj.flags.HasFlag(NetFlags.RequestAuthority))
                 {
                     obj.flags &= ~NetFlags.RequestAuthority;
+                    Debug.Log(obj.flags.HasFlag(NetFlags.RequestAuthority));
                 }
             }
             if (toSubmit.Count() != 0)

@@ -77,7 +77,6 @@ namespace Megatowel.NetObject
                 }
             }
             info.Write(id.ToByteArray());
-            flags = NetFlags.RequestAuthority;
             info.Write((byte)flags);
             info.Write((ushort)fieldstream.Position);
             data.Write(fieldstream.ToArray());
