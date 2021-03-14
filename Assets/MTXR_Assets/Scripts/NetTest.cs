@@ -31,6 +31,7 @@ public class NetTest : MonoBehaviour
         }
         else
         {
+            Debug.Log(netView.obj.fields[1].FromBytes<Vector3>());
             transform.position = netView.obj.fields[1].FromBytes<Vector3>();
             transform.rotation = netView.obj.fields[2].FromBytes<Quaternion>();
         }

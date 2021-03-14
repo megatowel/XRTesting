@@ -21,7 +21,6 @@ namespace Megatowel.NetObject
         {
             get
             {
-                Debug.Log($"{MultiplexManager.SelfId} == {obj.authority}");
                 return MultiplexManager.SelfId == obj.authority;
             }
         }
