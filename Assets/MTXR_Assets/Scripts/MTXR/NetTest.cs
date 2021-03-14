@@ -35,9 +35,9 @@ public class NetTest : NetBehaviour
         else
         {
             _rb.constraints = RigidbodyConstraints.FreezeAll;
-            transform.position = Vector3.Lerp(transform.position, netView.netObject.submittedfields[1].FromBytes<Vector3>(), Time.deltaTime);
-            transform.rotation = Quaternion.Lerp(transform.rotation, netView.netObject.submittedfields[2].FromBytes<Quaternion>(), Time.deltaTime);
-            _rb.velocity = Vector3.Lerp(_rb.velocity, netView.netObject.submittedfields[3].FromBytes<Vector3>(), Time.deltaTime);
+            transform.position = Vector3.Lerp(transform.position, netView.netObject.submittedfields[1].FromBytes<Vector3>(), Time.deltaTime * 15);
+            transform.rotation = Quaternion.Lerp(transform.rotation, netView.netObject.submittedfields[2].FromBytes<Quaternion>(), Time.deltaTime * 15);
+            _rb.velocity = Vector3.Lerp(_rb.velocity, netView.netObject.submittedfields[3].FromBytes<Vector3>(), Time.deltaTime * 15);
         }
     }
 
