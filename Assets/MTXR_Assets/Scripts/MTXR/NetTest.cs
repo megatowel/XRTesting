@@ -26,6 +26,7 @@ public class NetTest : NetBehaviour
         }
         if (netView.IsOwned)
         {
+            _rb.constraints = RigidbodyConstraints.None;
             netView.netObject.fields[1] = transform.position.ToBytes();
             netView.netObject.fields[2] = transform.rotation.ToBytes();
             netView.netObject.fields[3] = _rb.velocity.ToBytes();
@@ -49,7 +50,6 @@ public class NetTest : NetBehaviour
                 netView.netObject.fields[2] = transform.rotation.ToBytes();
                 netView.netObject.fields[3] = _rb.velocity.ToBytes();
                 netView.Submit(true);
-                _rb.constraints = RigidbodyConstraints.None;
             }
         }
     }
