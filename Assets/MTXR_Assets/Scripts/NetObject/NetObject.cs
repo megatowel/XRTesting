@@ -92,6 +92,7 @@ namespace Megatowel.NetObject
             while (info.BaseStream.Length != info.BaseStream.Position) {
                 Guid remoteId = new Guid(info.ReadBytes(16));
                 NetObject remoteObj = NetObject.GetNetObject(remoteId);
+                info.ReadByte(); // ignore it for now ;/
                 //remoteObj.flags = (NetFlags)info.ReadByte();
 
                 lastPosition = data.BaseStream.Position;
