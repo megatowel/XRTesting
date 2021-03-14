@@ -118,7 +118,6 @@ namespace MTXR.Player.Movement
             // If the new position is valid, teleport there and we're done!
             if ((_state & TeleportState.Valid) != 0)
             {
-                Debug.Log(_device.name);
                 ((XRControllerWithRumble)_device).SendImpulse(1f, 500f);
                 
                 
@@ -184,7 +183,7 @@ namespace MTXR.Player.Movement
                 }
 
                 _teleportMarker.transform.position = _teleportCastHit.point;
-                _teleportMarker.transform.localRotation = Quaternion.LookRotation(_teleportCastHit.normal, _teleportMarker.transform.up);
+                _teleportMarker.transform.localRotation = Quaternion.LookRotation(_teleportMarker.transform.forward, _teleportCastHit.normal);
             }
         }
 
