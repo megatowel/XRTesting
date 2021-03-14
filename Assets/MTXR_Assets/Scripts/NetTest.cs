@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Megatowel.Multiplex;
 using Megatowel.NetObject;
 using Megatowel.Multiplex.Extensions;
 using UnityEngine.InputSystem;
@@ -21,20 +22,18 @@ public class NetTest : MonoBehaviour
         if (Keyboard.current.cKey.isPressed)
         {
             netView.Submit(true);
+            Debug.Log("we ownin");
         }
         if (netView.IsOwned)
         {
-            Debug.Log("we sendin");
             netView.obj.fields[1] = transform.position.ToBytes();
             netView.obj.fields[2] = transform.rotation.ToBytes();
             netView.Submit();
         }
         else
         {
-            //Debug.Log(netView.obj.submittedfields[1].FromBytes<Vector3>());
             transform.position = netView.obj.submittedfields[1].FromBytes<Vector3>();
             transform.rotation = netView.obj.submittedfields[2].FromBytes<Quaternion>();
         }
-        Debug.Log(netView.obj.submittedfields[1].FromBytes<Vector3>());
     }
 }

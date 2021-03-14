@@ -52,10 +52,6 @@ namespace Megatowel.NetObject
                 {
                     // it changes objects anyway
                     //Debug.Log($"got {netobj.id} from {netobj.authority}");
-                    if (netobj.fields.ContainsKey(1))
-                    {
-                        Debug.Log(netobj.fields[1].FromBytes<Vector3>());
-                    }
                 }
             }
         }
