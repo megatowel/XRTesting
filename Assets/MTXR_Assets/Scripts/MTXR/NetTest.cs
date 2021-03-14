@@ -7,8 +7,15 @@ using Megatowel.Multiplex.Extensions;
 using MTXR.Player;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(Rigidbody))]
 public class NetTest : NetBehaviour
 {
+    private Rigidbody _rb;
+
+    void Awake() 
+    {
+        _rb = GetComponent<Rigidbody>();
+    }
     // Update is called once per frame, as you might know by now :3
     void Update()
     {
@@ -21,12 +28,15 @@ public class NetTest : NetBehaviour
         {
             netView.netObject.fields[1] = transform.position.ToBytes();
             netView.netObject.fields[2] = transform.rotation.ToBytes();
+            netView.netObject.fields[3] = _rb.velocity.ToBytes();
             netView.Submit();
         }
         else
         {
-            transform.position = netView.netObject.submittedfields[1].FromBytes<Vector3>();
-            transform.rotation = netView.netObject.submittedfields[2].FromBytes<Quaternion>();
+            _rb.isKinematic = true;
+            transform.position = Vector3.Lerp(transform.position, netView.netObject.submittedfields[1].FromBytes<Vector3>(), Time.deltaTime);
+            transform.rotation = Quaternion.Lerp(transform.rotation, netView.netObject.submittedfields[2].FromBytes<Quaternion>(), Time.deltaTime);
+            _rb.velocity = Vector3.Lerp(_rb.velocity, netView.netObject.submittedfields[3].FromBytes<Vector3>(), Time.deltaTime);
         }
     }
 
@@ -37,7 +47,9 @@ public class NetTest : NetBehaviour
             {
                 netView.netObject.fields[1] = transform.position.ToBytes();
                 netView.netObject.fields[2] = transform.rotation.ToBytes();
+                netView.netObject.fields[3] = _rb.velocity.ToBytes();
                 netView.Submit(true);
+                _rb.isKinematic = false;
             }
         }
     }
