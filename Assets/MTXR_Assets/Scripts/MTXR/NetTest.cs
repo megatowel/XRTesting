@@ -35,6 +35,8 @@ public class NetTest : NetBehaviour
         if (!netView.IsOwned) {
             if (collision.gameObject.layer == LayerMask.NameToLayer("Player")) 
             {
+                netView.netObject.fields[1] = transform.position.ToBytes();
+                netView.netObject.fields[2] = transform.rotation.ToBytes();
                 netView.Submit(true);
             }
         }
