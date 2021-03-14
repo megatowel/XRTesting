@@ -32,14 +32,14 @@ namespace Megatowel.NetObject
         }
         public ulong authority {
             get {
-                if (fields.ContainsKey(0))
-                    return BitConverter.ToUInt64(fields[0], 0);
+                if (submittedfields.ContainsKey(0))
+                    return BitConverter.ToUInt64(submittedfields[0], 0);
                 else
                     return 0;
             }
         }
         public Dictionary<byte, byte[]> fields = new Dictionary<byte, byte[]>(); 
-        private Dictionary<byte, byte[]> submittedfields = new Dictionary<byte, byte[]>(); 
+        public Dictionary<byte, byte[]> submittedfields = new Dictionary<byte, byte[]>(); 
         private static Dictionary<Guid, NetObject> instances = new Dictionary<Guid, NetObject>(); 
         private MemoryStream fieldstream = new MemoryStream();
         private BinaryWriter fieldbytes;
@@ -73,7 +73,8 @@ namespace Megatowel.NetObject
                     fieldbytes.Write(pair.Key);
                     fieldbytes.Write((ushort)pair.Value.Length);
                     fieldbytes.Write(pair.Value);
-                    submittedfields[pair.Key] = pair.Value;
+                    // redoing this submitted fields thing. it may just end up being "server side" fields
+                    // submittedfields[pair.Key] = pair.Value;
                 }
             }
             info.Write(id.ToByteArray());
@@ -98,8 +99,7 @@ namespace Megatowel.NetObject
                 dataLength = info.ReadUInt16();
                 while ((data.BaseStream.Position - lastPosition) < dataLength) {
                     byte key = data.ReadByte();
-                    remoteObj.fields[key] = data.ReadBytes(data.ReadUInt16());
-                    remoteObj.submittedfields[key] = remoteObj.fields[key];
+                    remoteObj.submittedfields[key] = data.ReadBytes(data.ReadUInt16());
                 }
                 yield return remoteObj;
             }
