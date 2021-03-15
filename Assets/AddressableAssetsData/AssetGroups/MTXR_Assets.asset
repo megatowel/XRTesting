@@ -22,14 +22,15 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Player
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
+    m_MainAsset: {fileID: 7924244275635188137, guid: bb31415f81dfffd4199b74adfc9726a1, type: 3}
+    m_TargetAsset: {fileID: 7924244275635188137, guid: bb31415f81dfffd4199b74adfc9726a1, type: 3}
   - m_GUID: 10f01c759cdc5ba48b6366e85be6e83d
     m_Address: TeleportBeam
     m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
+    m_SerializedLabels:
+    - Player
+    m_MainAsset: {fileID: 2100000, guid: 10f01c759cdc5ba48b6366e85be6e83d, type: 2}
+    m_TargetAsset: {fileID: 2100000, guid: 10f01c759cdc5ba48b6366e85be6e83d, type: 2}
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: a859de129630398439bddcdf01567ef3, type: 2}
   m_SchemaSet:
