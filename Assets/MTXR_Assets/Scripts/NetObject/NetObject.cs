@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Megatowel.NetObject
 {
@@ -19,35 +18,25 @@ namespace Megatowel.NetObject
     public class NetObject : IDisposable
     {
         public Guid id;
-        public bool tracking = true;
-        private NetFlags _flags;
-        internal NetFlags flags
+        public bool synced = false;
+
+        internal NetFlags flags;
+
+        public ulong Authority
         {
             get
             {
-                if (!tracking && (_flags | NetFlags.NoStore) == 0)
-                {
-                    _flags |= NetFlags.NoStore;
-                }
-                return _flags;
-            }
-            set
-            {
-                _flags = value;
-            }
-        }
-        public ulong authority
-        {
-            get
-            {
-                if (submittedfields.ContainsKey(0))
-                    return BitConverter.ToUInt64(submittedfields[0], 0);
+                if (fields.ContainsKey(0))
+                    return BitConverter.ToUInt64(fields[0], 0);
                 else
                     return 0;
             }
         }
+
         public Dictionary<byte, byte[]> fields = new Dictionary<byte, byte[]>();
-        public Dictionary<byte, byte[]> submittedfields = new Dictionary<byte, byte[]>();
+
+        internal Dictionary<byte, byte[]> unsubmittedfields = new Dictionary<byte, byte[]>();
+
         private static Dictionary<Guid, NetObject> _instances = new Dictionary<Guid, NetObject>();
         private MemoryStream _fieldStream = new MemoryStream();
         private BinaryWriter _fieldBytes;
@@ -83,9 +72,9 @@ namespace Megatowel.NetObject
         internal void SubmitToBinaryWriters(BinaryWriter data, BinaryWriter info, NetFlags flags, bool submitAll = false)
         {
             _fieldStream.SetLength(0);
-            foreach (KeyValuePair<byte, byte[]> pair in fields)
+            foreach (KeyValuePair<byte, byte[]> pair in unsubmittedfields)
             {
-                if (!submittedfields.ContainsKey(pair.Key) || !submittedfields[pair.Key].Equals(pair.Value))
+                if (submitAll || !fields.ContainsKey(pair.Key) || !fields[pair.Key].Equals(pair.Value))
                 {
                     _fieldBytes.Write(pair.Key);
                     _fieldBytes.Write((ushort)pair.Value.Length);
@@ -98,6 +87,7 @@ namespace Megatowel.NetObject
             info.Write((byte)flags);
             info.Write((ushort)_fieldStream.Position);
             data.Write(_fieldStream.ToArray());
+            unsubmittedfields.Clear();
         }
 
         internal static IEnumerable<NetObject> ReadFromBinaryReaders(BinaryReader data, BinaryReader info)
@@ -120,7 +110,7 @@ namespace Megatowel.NetObject
                 while ((data.BaseStream.Position - lastPosition) < dataLength)
                 {
                     byte key = data.ReadByte();
-                    remoteObj.submittedfields[key] = data.ReadBytes(data.ReadUInt16());
+                    remoteObj.fields[key] = data.ReadBytes(data.ReadUInt16());
                 }
                 yield return remoteObj;
             }

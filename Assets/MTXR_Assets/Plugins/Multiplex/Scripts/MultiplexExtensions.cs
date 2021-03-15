@@ -96,9 +96,7 @@ namespace Megatowel.Multiplex.Extensions
 
         public static T FromBytes<T>(this byte[] obj)
         {
-            BinaryReader reader = new BinaryReader(new MemoryStream());
-            reader.BaseStream.Write(obj, 0, obj.Length);
-            reader.BaseStream.Seek(0, SeekOrigin.Begin);
+            BinaryReader reader = new BinaryReader(new MemoryStream(obj));
             return reader.Read<T>();
         }
 

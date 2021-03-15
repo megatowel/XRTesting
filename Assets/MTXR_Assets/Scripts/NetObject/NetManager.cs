@@ -4,6 +4,7 @@ using System.Linq;
 using System.IO;
 using Zenject;
 using Megatowel.Multiplex;
+using Megatowel.Multiplex.Extensions;
 
 namespace Megatowel.NetObject
 {
@@ -54,8 +55,7 @@ namespace Megatowel.NetObject
                 _dataRead.ReadByte();
                 foreach (NetObject netobj in NetObject.ReadFromBinaryReaders(_dataRead, _infoRead))
                 {
-                    // it changes objects anyway
-                    //Debug.Log($"got {netobj.id} from {netobj.authority}");
+                    allViews[netobj.id]?.onObjectModify?.Invoke(); 
                 }
             }
         }
@@ -81,17 +81,25 @@ namespace Megatowel.NetObject
         }
     }
 
-    static class NetExtensions {
-        public static void SubmitObject(this NetObject obj, NetFlags flags)
+    internal static class NetExtensions {
+        internal static void SubmitObject(this NetObject netObj, NetFlags flags)
         {
             if (!flags.Equals(NetFlags.CreateFree))
             {
-                obj.flags = flags;
+                netObj.flags = flags;
             }
-            if (!NetManager.toSubmit.Contains(obj))
+            if (!NetManager.toSubmit.Contains(netObj))
             {
-                NetManager.toSubmit.Add(obj);
+                NetManager.toSubmit.Add(netObj);
             }
+        }
+        internal static void SubmitField<T>(this NetObject netObj, byte fieldNum, T field)
+        {
+            netObj.unsubmittedfields[fieldNum] = field.ToBytes<T>();
+        }
+        internal static T GetField<T>(this NetObject netObj, byte fieldNum)
+        {
+            return netObj.fields[fieldNum].FromBytes<T>();
         }
     }
 }
