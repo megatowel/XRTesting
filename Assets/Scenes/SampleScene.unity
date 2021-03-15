@@ -178,7 +178,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: XR Rig
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7300254522324666952, guid: bb31415f81dfffd4199b74adfc9726a1, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: bb31415f81dfffd4199b74adfc9726a1, type: 3}
 --- !u!1 &170171480
 GameObject:
