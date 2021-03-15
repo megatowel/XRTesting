@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using MTXR.Player.Movement;
 
 namespace MTXR.Player
 {
+    [DisallowMultipleComponent]
     public class MTPlayer : MonoBehaviour
     {
         /// <summary> 
@@ -31,7 +33,7 @@ namespace MTXR.Player
         /// </summary>
         /// NOTE: This should be replicated in some way, as the current locomotion will have networked parts.
         [HideInInspector]
-        public Locomotion Locomotion;
+        public List<Locomotion> Locomotions;
 
         private PlayerActions _actions;
 
@@ -64,8 +66,12 @@ namespace MTXR.Player
         private void SetupPlayer(bool isLocal)
         {
             _actions = new PlayerActions();
-            Locomotion = gameObject.AddComponent<TeleportLocomotion>();
-            Locomotion.Player = this;
+            Locomotions.Add(gameObject.AddComponent<TeleportLocomotion>());
+            Locomotions.Add(gameObject.AddComponent<RotationLocomotion>());
+            foreach (Locomotion loco in Locomotions)
+            {
+                loco.Player = this;
+            }
 
             if (isLocal && LocalPlayer == null)
             {
@@ -73,7 +79,7 @@ namespace MTXR.Player
                 // Hide head locally
                 foreach (MeshRenderer mesh in Head.Model.GetComponentsInChildren<MeshRenderer>())
                 {
-                    mesh.enabled = false;
+                    mesh.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
                 }
             }
             else

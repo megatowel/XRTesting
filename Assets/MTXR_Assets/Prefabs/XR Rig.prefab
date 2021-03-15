@@ -157,7 +157,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Player: {fileID: 756852354}
-  Root: {fileID: 7924244275635188136}
   HeightOffset: 0
 --- !u!1 &3223577104653897621
 GameObject:
@@ -659,7 +658,7 @@ GameObject:
   m_Layer: 6
   m_Name: XR Rig
   m_TagString: Player
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: -1412012063857583412, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -694,7 +693,7 @@ MonoBehaviour:
   Head: {fileID: 666627494450177814}
   LeftHand: {fileID: 4327488344706901371}
   RightHand: {fileID: 7924244275723870409}
-  Locomotion: {fileID: 0}
+  Locomotions: []
 --- !u!1 &7924244275723870409
 GameObject:
   m_ObjectHideFlags: 0

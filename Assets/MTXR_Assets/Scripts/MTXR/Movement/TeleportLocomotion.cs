@@ -46,24 +46,25 @@ namespace MTXR.Player.Movement
             _teleportLine = gameObject.AddComponent<LineRenderer>();
             _teleportLine.positionCount = 20;
             _teleportLine.widthMultiplier = 0.1f;
-            Addressables.LoadAssetAsync<Material>("TeleportBeam").Completed += (handle) =>
-            {
-                if (handle.Status == AsyncOperationStatus.Succeeded)
-                {
-                    Material material = handle.Result;
-                    _teleportLine.material = material;
-                }
-            };
             _teleportLine.textureMode = LineTextureMode.Tile;
             _teleportLine.enabled = false;
 
             _teleportMarker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             _teleportMarker.layer = LayerMask.NameToLayer("Ignore Raycast"); 
             Destroy(_teleportMarker.GetComponent<Collider>());
-            _teleportMarker.GetComponent<Renderer>().material = _teleportLine.material;
             _teleportMarker.transform.localScale = new Vector3(0.5f, 0.05f, 0.5f);
             _teleportMarker.transform.SetParent(Player.transform);
             _teleportMarker.SetActive(false);
+
+            Addressables.LoadAssetAsync<Material>("TeleportBeam").Completed += (handle) =>
+            {
+                if (handle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    Material material = handle.Result;
+                    _teleportLine.material = material;
+                    _teleportMarker.GetComponent<Renderer>().material = material;
+                }
+            };
 
             _actions = new TeleportActions();
             _actions.Enable();

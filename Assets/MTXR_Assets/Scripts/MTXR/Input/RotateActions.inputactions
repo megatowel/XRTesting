@@ -1,0 +1,52 @@
+{
+    "name": "RotateActions",
+    "maps": [
+        {
+            "name": "Rotation",
+            "id": "91d6bfdc-5e2e-4aff-9a98-eae655ffc99e",
+            "actions": [
+                {
+                    "name": "Rotate",
+                    "type": "Value",
+                    "id": "628e5275-60d7-463c-9015-9099a1f3546b",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "ChangeStyle",
+                    "type": "Button",
+                    "id": "ff519dc4-5f7e-48a3-8db8-e1a919f46086",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "6839f0c4-741d-4db3-84b3-8a6d0c676750",
+                    "path": "<XRController>/thumbstickClicked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ChangeStyle",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e14b446b-66e6-472b-aea2-9815e212f144",
+                    "path": "<XRController>/thumbstick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

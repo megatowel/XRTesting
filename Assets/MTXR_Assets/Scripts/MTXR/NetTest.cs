@@ -11,14 +11,14 @@ public class NetTest : NetBehaviour
 {
     private Rigidbody _rb;
 
-    void Awake() 
+    void Awake()
     {
         _rb = GetComponent<Rigidbody>();
     }
     // Update is called once per frame, as you might know by now :3
     void Update()
     {
-        if (Keyboard.current.cKey.isPressed)
+        if (Keyboard.current.cKey.wasPressedThisFrame)
         {
             netView.Submit(true);
             UnityEngine.Debug.Log("we ownin");
@@ -40,10 +40,11 @@ public class NetTest : NetBehaviour
         }
     }
 
-    void OnCollisionEnter(Collision collision) 
+    void OnCollisionEnter(Collision collision)
     {
-        if (!netView.IsOwned) {
-            if (collision.gameObject.layer == LayerMask.NameToLayer("Player")) 
+        if (!netView.IsOwned)
+        {
+            if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
             {
                 netView.EditField(1, transform.position);
                 netView.EditField(2, transform.rotation);
