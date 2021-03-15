@@ -188,7 +188,7 @@ namespace MTXR.Player.Movement
                 }
 
                 _teleportMarker.transform.position = _teleportCastHit.point;
-                _teleportMarker.transform.localRotation = Quaternion.LookRotation(_teleportMarker.transform.forward, _teleportCastHit.normal);
+                _teleportMarker.transform.rotation = Quaternion.LookRotation(Vector3.forward, _teleportCastHit.normal);
             }
         }
 

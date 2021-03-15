@@ -36,10 +36,21 @@
                 },
                 {
                     "name": "",
+                    "id": "3c836e5e-cb52-4973-a4ce-b9226d07064c",
+                    "path": "<WMRSpatialController>/menu",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ChangeStyle",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "e14b446b-66e6-472b-aea2-9815e212f144",
                     "path": "<XRController>/thumbstick",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "StickDeadzone",
                     "groups": "",
                     "action": "Rotate",
                     "isComposite": false,

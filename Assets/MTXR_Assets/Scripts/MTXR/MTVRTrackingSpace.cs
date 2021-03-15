@@ -17,7 +17,7 @@ namespace MTXR.Player
         {
             // Align the player's origin with their absolute tracked position.
             transform.localPosition = new Vector3(-Player.Head.transform.localPosition.x, HeightOffset, -Player.Head.transform.localPosition.z);
-            Player.transform.localPosition += new Vector3(-(transform.localPosition.x - _previousTransformPosition.x), 0, -(transform.localPosition.z - _previousTransformPosition.z));
+            Player.transform.localPosition += Player.transform.rotation * new Vector3(-(transform.localPosition.x - _previousTransformPosition.x), 0, -(transform.localPosition.z - _previousTransformPosition.z));
             _previousTransformPosition = transform.localPosition;
 
             /*
