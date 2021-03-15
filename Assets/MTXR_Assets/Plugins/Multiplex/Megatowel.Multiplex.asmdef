@@ -1,19 +1,14 @@
 {
     "name": "Megatowel.Multiplex",
-    "rootNamespace": "Megatowel",
+    "rootNamespace": "",
     "references": [
         "GUID:bff2a23415907e341a650cb469d7af5b",
         "GUID:0d8beb7f090555447a6cf5ce9e54dbb4",
         "GUID:c4aa65348ae95fe4d91d890edf93d014"
     ],
-    "includePlatforms": [
-        "Android",
-        "Editor",
-        "LinuxStandalone64",
-        "WindowsStandalone64"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": true,
+    "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

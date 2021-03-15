@@ -39,7 +39,7 @@ namespace Megatowel.Multiplex
         public void Connect(string host, int port) {
             int result = MultiplexWrapper.c_setup(c_instance, Encoding.UTF8.GetBytes(host), port);
             if (result != 0) {
-                throw new MultiplexException("Failed to connect to server.");
+                throw new MultiplexException($"Failed to connect to server. Code: {result}");
             }
             connected = true;
         }

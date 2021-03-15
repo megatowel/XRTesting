@@ -2,9 +2,10 @@
 // TODO: Right now it just craps out objects, clean that up sometime
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.XR;
-
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace MTXR.Player.Movement
 {
@@ -45,7 +46,14 @@ namespace MTXR.Player.Movement
             _teleportLine = gameObject.AddComponent<LineRenderer>();
             _teleportLine.positionCount = 20;
             _teleportLine.widthMultiplier = 0.1f;
-            _teleportLine.material = new Material(Shader.Find("MTXR/TeleportBeam"));
+            Addressables.LoadAssetAsync<Material>("TeleportBeam").Completed += (handle) =>
+            {
+                if (handle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    Material material = handle.Result;
+                    _teleportLine.material = material;
+                }
+            };
             _teleportLine.textureMode = LineTextureMode.Tile;
             _teleportLine.enabled = false;
 

@@ -29,7 +29,7 @@ namespace Megatowel.Multiplex
         private static ConcurrentQueue<MultiplexPacket> sendQueue = new ConcurrentQueue<MultiplexPacket>();
         private static ConcurrentDictionary<uint, List<ulong>> userLists = new ConcurrentDictionary<uint, List<ulong>>();
 
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
+//#if UNITY_EDITOR || DEVELOPMENT_BUILD
         // MT
         // private readonly string hostAddress = "104.37.189.85";
         // private readonly int hostPort = 3000;
@@ -37,10 +37,10 @@ namespace Megatowel.Multiplex
         private readonly string hostAddress = "108.230.44.131";
         private readonly int hostPort = 3000;
         // ;>
-#else
-        private readonly string hostAddress = "0.0.0.0";
-        private readonly int hostPort = 3000;
-#endif
+//#else
+        //private readonly string hostAddress = "0.0.0.0";
+        //private readonly int hostPort = 3000;
+//#endif
 
         public void Initialize()
         {
