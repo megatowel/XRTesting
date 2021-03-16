@@ -64,6 +64,10 @@ FMODStudioCache.asset
 fmod_editor.log
 FMOD/Cache/
 
+# FMOD Studio cache and unsaved files
+.cache
+.unsaved
+
 # Unity3D generated file on crash reports
 sysinfo.txt
 
