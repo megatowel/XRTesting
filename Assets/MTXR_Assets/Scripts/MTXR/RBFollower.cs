@@ -148,7 +148,7 @@ public class RBFollower : MonoBehaviour
         rb.velocity = (transform.parent.TransformPoint(newPosition) - rb.position) / Time.fixedDeltaTime;
 
         // Rotation
-        Quaternion deltaRotation = newRotation * Quaternion.Inverse(rb.rotation);
+        Quaternion deltaRotation = (transform.parent.rotation * newRotation).normalized * Quaternion.Inverse(rb.rotation);
         Vector3 eulerRotation = new Vector3(
             Mathf.DeltaAngle(0, Mathf.Round(deltaRotation.eulerAngles.x)),
             Mathf.DeltaAngle(0, Mathf.Round(deltaRotation.eulerAngles.y)),
@@ -162,8 +162,13 @@ public class RBFollower : MonoBehaviour
     {
     }
 
-    protected virtual void UpdateCallback()
+    protected virtual void FixedUpdate()
     {
         SetLocalTransform(m_CurrentPosition, m_CurrentRotation);
+    }
+
+    protected virtual void UpdateCallback()
+    {
+        //SetLocalTransform(m_CurrentPosition, m_CurrentRotation);
     }
 }
