@@ -35,29 +35,9 @@ namespace MTXR.Player
         [HideInInspector]
         public List<Locomotion> Locomotions;
 
-        private PlayerActions _actions;
-
-        private void OnEnable()
-        {
-            _actions.Enable();
-        }
-
-        private void OnDisable()
-        {
-            _actions.Disable();
-        }
-
         private void Awake()
         {
             SetupPlayer(true);
-        }
-
-        private void Update()
-        {
-            LeftHand.transform.localPosition = _actions.Base.LeftHandPosition.ReadValue<Vector3>();
-            LeftHand.transform.localRotation = _actions.Base.LeftHandRotation.ReadValue<Quaternion>();
-            RightHand.transform.localPosition = _actions.Base.RightHandPosition.ReadValue<Vector3>();
-            RightHand.transform.localRotation = _actions.Base.RightHandRotation.ReadValue<Quaternion>();
         }
 
         /// <summary> 
@@ -65,7 +45,6 @@ namespace MTXR.Player
         /// </summary>
         private void SetupPlayer(bool isLocal)
         {
-            _actions = new PlayerActions();
             Locomotions.Add(gameObject.AddComponent<TeleportLocomotion>());
             Locomotions.Add(gameObject.AddComponent<RotationLocomotion>());
             foreach (Locomotion loco in Locomotions)

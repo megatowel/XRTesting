@@ -10,12 +10,13 @@ using UnityEngine;
 
 namespace Megatowel.Multiplex
 {
-    public class MultiplexManager : IInitializable, ITickable
+    public class MultiplexManager : IInitializable, ITickable, IDisposable
     {
-        //sendrate
-        public const int sendRate = 30;
+        public const ushort MinPort = 1024;
+        public const ushort MaxPort = 65535;
+        public const int SendRate = 30;
         private float _sendRateDelta;
-
+        
         public static event Action<MultiplexPacket> OnEvent;
         public static event Action<MultiplexErrors> OnError;
         public static event Action<MultiplexPacket> OnUserConnectEvent;
@@ -23,28 +24,39 @@ namespace Megatowel.Multiplex
         public static event Action OnSetup;
         public static event Action OnDisconnect;
         public static event Action NetworkTick;
-        public static ulong SelfId;
+
+        /// <summary>
+        /// The local player's user ID on the server.
+        /// </summary>
+        public static ulong Self;
 
         private MultiplexClient multiplex;
         private static ConcurrentQueue<MultiplexPacket> sendQueue = new ConcurrentQueue<MultiplexPacket>();
         private static ConcurrentDictionary<uint, List<ulong>> userLists = new ConcurrentDictionary<uint, List<ulong>>();
 
-//#if UNITY_EDITOR || DEVELOPMENT_BUILD
-        // MT
-        private readonly string hostAddress = "104.37.189.85";
-        private readonly int hostPort = 3000;
-        // SOUP
-        // private readonly string hostAddress = "108.230.44.131";
-        // private readonly int hostPort = 3000;
-        // ;>
-//#else
-        //private readonly string hostAddress = "0.0.0.0";
-        //private readonly int hostPort = 3000;
-//#endif
+        // MultiplexSettings asset
+        private MultiplexSettings _settings = Resources.Load<MultiplexSettings>("MultiplexSettings");
 
         public void Initialize()
         {
-            if (!Setup(hostAddress)) 
+            if (_settings == null) 
+            {
+                MTDebug.LogError(new MultiplexException("No MultiplexSettings asset found in Resources! Please create an asset of type MultiplexSettings in Resources and configure it!"));
+                return;
+            }
+            else if (String.IsNullOrEmpty(_settings.Address)) {
+                MTDebug.LogError(new MultiplexException("Address in MultiplexSettings was empty! Please configure it!"));
+                return;
+            }
+            else if (_settings.Port < MinPort || _settings.Port > MaxPort) {
+                MTDebug.LogError(new MultiplexException($"Port in MultiplexSettings was out of range! Port must be between {MinPort} and {MaxPort}."));
+                return;
+            }
+
+            // bound delegate instead of using the function as boilerplate with the same parameters
+            Func<bool> setupFunc = () => Setup(_settings.Address, _settings.Port);
+
+            if (!setupFunc())
             {
                 return;
             }
@@ -56,12 +68,12 @@ namespace Megatowel.Multiplex
 
             OnError += (error) =>
             {
-                Setup(hostAddress);
+                setupFunc();
             };
 
             OnDisconnect += () =>
             {
-                Setup(hostAddress);
+                setupFunc();
             };
 
             OnEvent += (MultiplexPacket ev) =>
@@ -73,34 +85,45 @@ namespace Megatowel.Multiplex
             };
         }
 
-        public bool Setup(string host)
+        public void Dispose() 
         {
-            try {
-                MTDebug.Log("Starting Multiplex");
+            if (multiplex != null) 
+            {
+                multiplex.Disconnect(100);
+                multiplex = null;
+            }
+        }
+
+        private bool Setup(string host, ushort port)
+        {
+            try
+            {
+                MTDebug.Log("Connecting to Multiplex...");
                 multiplex = new MultiplexClient();
-                multiplex.Connect(host, hostPort);
+                multiplex.Connect(host, port);
                 return true;
             }
-            catch (Exception e) 
+            catch (Exception e)
             {
-                if (e.GetType() == typeof(MultiplexException)) 
+                if (e.GetType() == typeof(MultiplexException))
                 {
                     MTDebug.LogError(e);
                 }
-                else 
+                else
                 {
-                    Debug.LogError(e);    
+                    Debug.LogError(e);
                 }
+                multiplex = null;
                 return false;
             }
-            
+
         }
 
         private void Process()
         {
             try
             {
-                while (multiplex.connected)
+                while (multiplex.Online)
                 {
                     var ev = multiplex.ProcessEvent(0);
                     if (ev.Error == 0)
@@ -108,7 +131,7 @@ namespace Megatowel.Multiplex
                         switch (ev.EventType)
                         {
                             case MultiplexEventType.UserSetup:
-                                SelfId = ev.FromUserId;
+                                Self = ev.FromUserId;
                                 OnSetup?.Invoke();
                                 break;
 
@@ -125,7 +148,7 @@ namespace Megatowel.Multiplex
                                 break;
 
                             case MultiplexEventType.InstanceUserUpdate:
-                                if (ev.FromUserId != SelfId)
+                                if (ev.FromUserId != Self)
                                 {
                                     if (ev.InstanceId != 0)
                                     {
@@ -155,7 +178,7 @@ namespace Megatowel.Multiplex
                         }
                     }
                 }
-                if (multiplex.connected)
+                if (multiplex.Online)
                 {
                     for (int i = 0; i < sendQueue.Count; i++)
                     {
@@ -180,13 +203,16 @@ namespace Megatowel.Multiplex
 
         public void Tick()
         {
-            _sendRateDelta += Time.unscaledDeltaTime;
-            if (_sendRateDelta > (float)sendRate / 1000)
+            if (multiplex != null)
             {
-                _sendRateDelta = 0f;
-                NetworkTick?.Invoke();
+                _sendRateDelta += Time.unscaledDeltaTime;
+                if (_sendRateDelta > (float)SendRate / 1000)
+                {
+                    _sendRateDelta = 0f;
+                    NetworkTick?.Invoke();
+                }
+                Process();
             }
-            Process();
         }
     }
 

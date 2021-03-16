@@ -7,7 +7,7 @@ public class MultiplexInstaller : MonoInstaller<MultiplexInstaller>
 {
     public override void InstallBindings()
     {
-        MTDebug.Log("Multiplex Installer Running");
+        MTDebug.Log("Running Multiplex Installer...");
         Container.BindInterfacesAndSelfTo<MultiplexManager>().AsSingle().NonLazy();
     }
 }

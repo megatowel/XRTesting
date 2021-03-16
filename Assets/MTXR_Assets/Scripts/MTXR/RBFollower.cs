@@ -127,6 +127,7 @@ public class RBFollower : MonoBehaviour
     protected virtual void Awake()
     {
         rb = (Rigidbody)gameObject.GetComponent(typeof(Rigidbody));
+        rb.maxAngularVelocity = 100f;
     }
 
     protected void OnEnable()
@@ -143,10 +144,21 @@ public class RBFollower : MonoBehaviour
 
     protected virtual void SetLocalTransform(Vector3 newPosition, Quaternion newRotation)
     {
-        rb.MovePosition(transform.parent.TransformPoint(newPosition));
-        rb.MoveRotation((transform.parent.rotation * newRotation).normalized);
-        transform.localPosition = newPosition;
-        transform.localRotation = newRotation;
+        // Position
+        rb.velocity = (transform.parent.TransformPoint(newPosition) - rb.position) / Time.fixedDeltaTime;
+
+        // Rotation
+        Quaternion deltaRotation = newRotation * Quaternion.Inverse(rb.rotation);
+        Vector3 eulerRotation = new Vector3(
+            Mathf.DeltaAngle(0, Mathf.Round(deltaRotation.eulerAngles.x)),
+            Mathf.DeltaAngle(0, Mathf.Round(deltaRotation.eulerAngles.y)),
+            Mathf.DeltaAngle(0, Mathf.Round(deltaRotation.eulerAngles.z))
+        );
+ 
+        rb.angularVelocity = eulerRotation / Time.fixedDeltaTime * Mathf.Deg2Rad;
+
+        transform.position = rb.position;
+        transform.rotation = rb.rotation;
     }
 
     protected virtual void OnDestroy()

@@ -22,9 +22,9 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: TeleportBeam
   m_Shader: {fileID: -6465566751694194690, guid: cb3147cb12852c34290ffca45c1c6462, type: 3}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: _ISVALID
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 1
+  m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}

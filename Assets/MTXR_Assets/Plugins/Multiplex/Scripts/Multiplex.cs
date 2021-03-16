@@ -15,7 +15,7 @@ namespace Megatowel.Multiplex
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
-    
+
     public struct MultiplexEvent
     {
         public MultiplexEventType EventType;
@@ -28,35 +28,43 @@ namespace Megatowel.Multiplex
         public MultiplexErrors Error;
         public int EnetError;
     };
-    class MultiplexClient {
-        private IntPtr c_instance = MultiplexWrapper.c_make_client();
-        public bool connected = false;
 
-        ~MultiplexClient() {
+    class MultiplexClient
+    {
+        private IntPtr c_instance = MultiplexWrapper.c_make_client();
+        public bool Online = false;
+
+        ~MultiplexClient()
+        {
             MultiplexWrapper.c_destroy(c_instance);
         }
 
-        public void Connect(string host, int port) {
+        public void Connect(string host, int port)
+        {
             int result = MultiplexWrapper.c_setup(c_instance, Encoding.UTF8.GetBytes(host), port);
-            if (result != 0) {
+            if (result != 0)
+            {
                 throw new MultiplexException($"Failed to connect to server. Code: {result}");
             }
-            connected = true;
+            Online = true;
         }
-        public int BindChannel(uint channel, ulong instanceId) {
+        public int BindChannel(uint channel, ulong instanceId)
+        {
             return MultiplexWrapper.c_bind_channel(c_instance, channel, instanceId);
         }
-        public int Send(byte[] data, byte[] info, uint channel, MultiplexSendFlags flags) {
+        public int Send(byte[] data, byte[] info, uint channel, MultiplexSendFlags flags)
+        {
             return MultiplexWrapper.c_send(c_instance, data, (uint)data.Length, info, (uint)info.Length, channel, (int)flags);
         }
 
-        public MultiplexEvent ProcessEvent(uint timeout) {
+        public MultiplexEvent ProcessEvent(uint timeout)
+        {
             MultiplexWrapperEvent ev = MultiplexWrapper.c_process_event(c_instance, timeout);
             if (ev.EventType == MultiplexEventType.Disconnected)
-                connected = false;
+                Online = false;
             byte[] data = new byte[(int)ev.DataSize];
             byte[] info = new byte[(int)ev.InfoSize];
-            byte[] userIdsBytes = new byte[(int)(ev.UserIdsSize*8)];
+            byte[] userIdsBytes = new byte[(int)(ev.UserIdsSize * 8)];
             ulong[] userIds = new ulong[(int)ev.UserIdsSize];
             if (ev.DataSize != 0)
             {
@@ -68,12 +76,14 @@ namespace Megatowel.Multiplex
             }
             if (ev.UserIdsSize != 0)
             {
-                Marshal.Copy(ev.UserIds, userIdsBytes, 0, (int)(ev.UserIdsSize*8));
-                for (int i = 0; i < ev.UserIdsSize; i++) {
-                    userIds[i] = BitConverter.ToUInt64(userIdsBytes, i*8);
+                Marshal.Copy(ev.UserIds, userIdsBytes, 0, (int)(ev.UserIdsSize * 8));
+                for (int i = 0; i < ev.UserIdsSize; i++)
+                {
+                    userIds[i] = BitConverter.ToUInt64(userIdsBytes, i * 8);
                 }
             }
-            return new MultiplexEvent {
+            return new MultiplexEvent
+            {
                 EventType = ev.EventType,
                 FromUserId = ev.FromUserId,
                 ChannelId = ev.ChannelId,
@@ -85,8 +95,9 @@ namespace Megatowel.Multiplex
                 EnetError = ev.EnetError
             };
         }
-        public int Disconnect(uint timeout) {
-            connected = false;
+        public int Disconnect(uint timeout)
+        {
+            Online = false;
             return MultiplexWrapper.c_disconnect(c_instance, timeout);
         }
     }

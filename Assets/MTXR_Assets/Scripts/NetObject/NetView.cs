@@ -22,7 +22,7 @@ namespace Megatowel.NetObject
         {
             get
             {
-                return MultiplexManager.SelfId == netObject.Authority;
+                return MultiplexManager.Self == netObject.Authority;
             }
         }
 

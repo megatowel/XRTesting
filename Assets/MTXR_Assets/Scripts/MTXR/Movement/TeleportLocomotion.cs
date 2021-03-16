@@ -32,13 +32,15 @@ namespace MTXR.Player.Movement
         private LineRenderer _teleportLine;
         // Reference to Teleport Marker object.
         private GameObject _teleportMarker;
+        // Reference to the teleport beam material.
+        private Material _teleportMaterial;
         // Input action set.
         private TeleportActions _actions;
         // The device that is currently in control.
         private InputDevice _device;
         // Is the device that is in control left handed, right handed, or neither?
         private string _handedness;
-        
+
 
         private void Start()
         {
@@ -50,7 +52,8 @@ namespace MTXR.Player.Movement
             _teleportLine.enabled = false;
 
             _teleportMarker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            _teleportMarker.layer = LayerMask.NameToLayer("Ignore Raycast"); 
+            _teleportMarker.name = "Teleport Marker";
+            _teleportMarker.layer = LayerMask.NameToLayer("Player");
             Destroy(_teleportMarker.GetComponent<Collider>());
             _teleportMarker.transform.localScale = new Vector3(0.5f, 0.05f, 0.5f);
             _teleportMarker.transform.SetParent(Player.transform);
@@ -60,9 +63,9 @@ namespace MTXR.Player.Movement
             {
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    Material material = handle.Result;
-                    _teleportLine.material = material;
-                    _teleportMarker.GetComponent<Renderer>().material = material;
+                    _teleportMaterial = handle.Result;
+                    _teleportLine.material = _teleportMaterial;
+                    _teleportMarker.GetComponent<Renderer>().material = _teleportMaterial;
                 }
             };
 
@@ -124,8 +127,6 @@ namespace MTXR.Player.Movement
             if ((_state & TeleportState.Valid) != 0)
             {
                 ((XRControllerWithRumble)_device).SendImpulse(1f, 500f);
-                
-                
                 DoTeleport();
             }
         }
@@ -171,12 +172,12 @@ namespace MTXR.Player.Movement
                 // TODO: This will not be needed eventually.
                 if ((_state & TeleportState.Valid) != 0)
                 {
-                    _teleportLine.material.EnableKeyword("_ISVALID");
+                    _teleportMaterial.EnableKeyword("_ISVALID");
                     _teleportMarker.SetActive(true);
                 }
                 else
                 {
-                    _teleportLine.material.DisableKeyword("_ISVALID");
+                    _teleportMaterial.DisableKeyword("_ISVALID");
                     _teleportMarker.SetActive(false);
                 }
 
