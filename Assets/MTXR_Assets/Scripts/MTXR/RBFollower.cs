@@ -156,9 +156,6 @@ public class RBFollower : MonoBehaviour
         );
  
         rb.angularVelocity = eulerRotation / Time.fixedDeltaTime * Mathf.Deg2Rad;
-
-        transform.position = rb.position;
-        transform.rotation = rb.rotation;
     }
 
     protected virtual void OnDestroy()
