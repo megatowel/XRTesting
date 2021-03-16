@@ -31,11 +31,11 @@ namespace Megatowel.Multiplex
 
 //#if UNITY_EDITOR || DEVELOPMENT_BUILD
         // MT
-        // private readonly string hostAddress = "104.37.189.85";
-        // private readonly int hostPort = 3000;
-        // SOUP
-        private readonly string hostAddress = "108.230.44.131";
+        private readonly string hostAddress = "104.37.189.85";
         private readonly int hostPort = 3000;
+        // SOUP
+        // private readonly string hostAddress = "108.230.44.131";
+        // private readonly int hostPort = 3000;
         // ;>
 //#else
         //private readonly string hostAddress = "0.0.0.0";
