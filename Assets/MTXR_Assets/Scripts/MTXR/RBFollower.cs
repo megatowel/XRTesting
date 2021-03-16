@@ -143,9 +143,10 @@ public class RBFollower : MonoBehaviour
 
     protected virtual void SetLocalTransform(Vector3 newPosition, Quaternion newRotation)
     {
-        
         rb.MovePosition(transform.parent.TransformPoint(newPosition));
         rb.MoveRotation((transform.parent.rotation * newRotation).normalized);
+        transform.localPosition = newPosition;
+        transform.localRotation = newRotation;
     }
 
     protected virtual void OnDestroy()
