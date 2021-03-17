@@ -53,6 +53,8 @@ public class RBFollower : MonoBehaviour
         }
     }
 
+    public GameObject MeshObject;
+
     Vector3 m_CurrentPosition = Vector3.zero;
     Quaternion m_CurrentRotation = Quaternion.identity;
     bool m_RotationBound = false;
@@ -154,7 +156,7 @@ public class RBFollower : MonoBehaviour
             Mathf.DeltaAngle(0, Mathf.Round(deltaRotation.eulerAngles.y)),
             Mathf.DeltaAngle(0, Mathf.Round(deltaRotation.eulerAngles.z))
         );
- 
+
         rb.angularVelocity = eulerRotation / Time.fixedDeltaTime * Mathf.Deg2Rad;
     }
 
@@ -167,8 +169,19 @@ public class RBFollower : MonoBehaviour
         SetLocalTransform(m_CurrentPosition, m_CurrentRotation);
     }
 
+    const float _handRBDistanceMaxMag = 0.1f;
+    const float _handRBDistanceMaxAngle = 15f;
+
     protected virtual void UpdateCallback()
     {
-        //SetLocalTransform(m_CurrentPosition, m_CurrentRotation);
+        // i swear i'm not this crazy
+        float handMag = ((transform.parent.TransformPoint(m_CurrentPosition) - rb.position).magnitude / _handRBDistanceMaxMag) / ((rb.velocity.magnitude < 1.0f) ? rb.velocity.magnitude : 1.0f);
+        MeshObject.transform.position = (handMag < 1.0f) ? Vector3.Lerp(transform.parent.TransformPoint(m_CurrentPosition), rb.position, (handMag < 0.5f) ? 0f : (handMag - 0.5f)*2) : rb.position;
+        float handAngle = Quaternion.Angle((transform.parent.rotation * m_CurrentRotation).normalized, rb.rotation) / _handRBDistanceMaxAngle;
+        MeshObject.transform.rotation = (handAngle < 1.0f) ? Quaternion.Lerp((transform.parent.rotation * m_CurrentRotation).normalized, rb.rotation, (handAngle < 0.5f) ? 0f : (handAngle - 0.5f) * 2) : rb.rotation;
+    }
+    protected virtual void Update()
+    {
+
     }
 }
