@@ -380,7 +380,7 @@
     },
     "m_Name": "InvalidColor",
     "m_DefaultReferenceName": "Color_0b5ed6f4f5214e75848b3c193ce3c22e",
-    "m_OverrideReferenceName": "",
+    "m_OverrideReferenceName": "_InvalidColor",
     "m_GeneratePropertyBlock": true,
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
@@ -472,7 +472,7 @@
     },
     "m_Name": "ValidColor",
     "m_DefaultReferenceName": "Color_1220d035f7a141a78ea22eb874dd02af",
-    "m_OverrideReferenceName": "",
+    "m_OverrideReferenceName": "_ValidColor",
     "m_GeneratePropertyBlock": true,
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
@@ -828,7 +828,7 @@
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.GroupData",
     "m_ObjectId": "55be126c183a46c099f1088c2b965617",
-    "m_Title": "Color by enum",
+    "m_Title": "Select color by state",
     "m_Position": {
         "x": -997.0,
         "y": -268.0
