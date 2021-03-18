@@ -146,6 +146,10 @@ public class RBFollower : MonoBehaviour
 
     protected virtual void SetLocalTransform(Vector3 newPosition, Quaternion newRotation)
     {
+        handMag = ((transform.parent.TransformPoint(m_CurrentPosition) - rb.position).magnitude / _handRBDistanceMaxMag) / ((rb.velocity.magnitude < 1.0f) ? rb.velocity.magnitude : 1.0f);
+        handAngle = Quaternion.Angle((transform.parent.rotation * m_CurrentRotation).normalized, rb.rotation) / _handRBDistanceMaxAngle;
+        float vel = ((rb.velocity.magnitude < 1.0f) ? rb.velocity.magnitude : 1.0f);
+
         // Position
         rb.velocity = (transform.parent.TransformPoint(newPosition) - rb.position) / Time.fixedDeltaTime;
 
@@ -169,15 +173,17 @@ public class RBFollower : MonoBehaviour
         SetLocalTransform(m_CurrentPosition, m_CurrentRotation);
     }
 
-    const float _handRBDistanceMaxMag = 0.1f;
+    const float _handRBDistanceMaxMag = 0.15f;
     const float _handRBDistanceMaxAngle = 15f;
+    float handMag = 0.0f;
+    float handAngle = 0.0f;
+
 
     protected virtual void UpdateCallback()
     {
         // i swear i'm not this crazy
-        float handMag = ((transform.parent.TransformPoint(m_CurrentPosition) - rb.position).magnitude / _handRBDistanceMaxMag) / ((rb.velocity.magnitude < 1.0f) ? rb.velocity.magnitude : 1.0f);
+        
         MeshObject.transform.position = (handMag < 1.0f) ? Vector3.Lerp(transform.parent.TransformPoint(m_CurrentPosition), rb.position, (handMag < 0.5f) ? 0f : (handMag - 0.5f)*2) : rb.position;
-        float handAngle = Quaternion.Angle((transform.parent.rotation * m_CurrentRotation).normalized, rb.rotation) / _handRBDistanceMaxAngle;
         MeshObject.transform.rotation = (handAngle < 1.0f) ? Quaternion.Lerp((transform.parent.rotation * m_CurrentRotation).normalized, rb.rotation, (handAngle < 0.5f) ? 0f : (handAngle - 0.5f) * 2) : rb.rotation;
     }
     protected virtual void Update()
