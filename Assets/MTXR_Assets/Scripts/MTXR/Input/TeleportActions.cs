@@ -1,4 +1,4 @@
-// GENERATED AUTOMATICALLY FROM 'Assets/Input/TeleportActions.inputactions'
+// GENERATED AUTOMATICALLY FROM 'Assets/MTXR_Assets/Scripts/MTXR/Input/TeleportActions.inputactions'
 
 using System;
 using System.Collections;
@@ -43,6 +43,17 @@ public class @TeleportActions : IInputActionCollection, IDisposable
                     ""name"": """",
                     ""id"": ""e21f4e5c-f225-477d-966c-62b3b95fac2a"",
                     ""path"": ""<WMRSpatialController>/touchpadClicked"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Teleport"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""07b21a90-036c-4796-ae9b-b13e426d0765"",
+                    ""path"": ""<XRController>/primaryButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
