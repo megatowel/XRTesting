@@ -51,7 +51,7 @@ namespace Megatowel.NetObject
             return netObject.GetField<T>(fieldNum);
         }
 
-        private void Awake()
+        private void Start()
         {
             if (SceneObject)
             {
@@ -60,9 +60,22 @@ namespace Megatowel.NetObject
                 NetManager.allViews[objId] = this;
                 netObject.SubmitObject(Exclusive ? NetFlags.CreateExclusive : NetFlags.CreateFree);
             }
-            else
+            /*else if (netObject != null)
             {
                 netObject = NetObject.GetNetObject(Guid.NewGuid());
+                netObject.SubmitObject(Exclusive ? NetFlags.CreateExclusive : NetFlags.RequestAuthority);
+            }*/
+        }
+
+        internal void SetNetAddressableObject(Guid objId, string address)
+        {
+            Debug.Log(address);
+            if (netObject == null)
+            {
+                Debug.Log("yay");
+                netObject = NetObject.GetNetObject(objId);
+                NetManager.allViews[objId] = this;
+                netObject.SubmitField(255, address);
                 netObject.SubmitObject(Exclusive ? NetFlags.CreateExclusive : NetFlags.RequestAuthority);
             }
         }

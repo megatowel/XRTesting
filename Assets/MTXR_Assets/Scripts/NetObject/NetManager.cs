@@ -5,10 +5,12 @@ using System.IO;
 using Zenject;
 using Megatowel.Multiplex;
 using Megatowel.Multiplex.Extensions;
+using UnityEngine.AddressableAssets;
+using UnityEngine;
 
 namespace Megatowel.NetObject
 {
-    internal class NetManager : IInitializable
+    public class NetManager : IInitializable, ITickable
     {
         internal static Dictionary<Guid, NetView> allViews = new Dictionary<Guid, NetView>();
         internal static List<NetObject> toSubmit = new List<NetObject>();
@@ -23,6 +25,10 @@ namespace Megatowel.NetObject
         private BinaryWriter _dataWrite;
         private BinaryWriter _infoWrite;
 
+        public const int SendRate = 30;
+        private float _sendRateDelta;
+        public static event Action NetworkTick;
+
         public void Initialize()
         {
             _dataRead = new BinaryReader(_dataReadMem);
@@ -31,8 +37,24 @@ namespace Megatowel.NetObject
             _infoWrite = new BinaryWriter(_infoWriteMem);
             MultiplexManager.OnSetup += () =>
             {
-                MultiplexManager.NetworkTick += NetworkTick;
+                NetworkTick += NetTick;
                 MultiplexManager.OnEvent += OnNetEvent;
+            };
+        }
+
+        public static void SpawnNetAddressable(string address)
+        {
+            SpawnNetAddressable(address, Guid.NewGuid());
+        }
+
+        public static void SpawnNetAddressable(string address, Guid objId)
+        {
+            allViews[objId] = null;
+            Addressables.InstantiateAsync(address).Completed += (obj) =>
+            {
+                GameObject gameobj = obj.Result;
+                NetView view = gameobj.GetComponent<NetView>();
+                view.SetNetAddressableObject(objId, address);
             };
         }
 
@@ -55,12 +77,29 @@ namespace Megatowel.NetObject
                 _dataRead.ReadByte();
                 foreach (NetObject netobj in NetObject.ReadFromBinaryReaders(_dataRead, _infoRead))
                 {
-                    allViews[netobj.id]?.onObjectModify?.Invoke(); 
+                    if (!allViews.ContainsKey(netobj.id) && netobj.fields.ContainsKey(255))
+                    {
+                        SpawnNetAddressable(netobj.GetField<string>(255), netobj.id);
+                    }
+                    if (allViews.ContainsKey(netobj.id))
+                    {
+                        allViews[netobj.id]?.onObjectModify?.Invoke();
+                    }
                 }
             }
         }
 
-        private void NetworkTick()
+        public void Tick()
+        {
+            _sendRateDelta += Time.unscaledDeltaTime;
+            if (_sendRateDelta > (float)SendRate / 1000)
+            {
+                _sendRateDelta = 0f;
+                NetworkTick?.Invoke();
+            }
+        }
+
+        private void NetTick()
         {
             _dataWriteMem.SetLength(0);
             _infoWriteMem.SetLength(0);

@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using MTXR.Player.Movement;
+using UnityEngine.AddressableAssets;
+using Megatowel.NetObject;
 
 namespace MTXR.Player
 {
     [DisallowMultipleComponent]
-    public class MTPlayer : MonoBehaviour
+    public class MTPlayer : NetBehaviour
     {
         /// <summary> 
         /// Static reference to our local player.
@@ -35,25 +36,32 @@ namespace MTXR.Player
         [HideInInspector]
         public List<Locomotion> Locomotions;
 
-        private void Awake()
+        private void Start()
         {
-            SetupPlayer(true);
+            SetupPlayer();
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void CreateLocal()
+        {
+            NetManager.SpawnNetAddressable("MTXR_Player");
         }
 
         /// <summary> 
         /// Configures a player depending on if they are a network player or not.
         /// </summary>
-        private void SetupPlayer(bool isLocal)
+        private void SetupPlayer()
         {
-            Locomotions.Add(gameObject.AddComponent<TeleportLocomotion>());
-            Locomotions.Add(gameObject.AddComponent<RotationLocomotion>());
-            foreach (Locomotion loco in Locomotions)
+            if (netView.IsOwned && LocalPlayer == null)
             {
-                loco.Player = this;
-            }
+                // TODO: Locomotion networking.
+                Locomotions.Add(gameObject.AddComponent<TeleportLocomotion>());
+                Locomotions.Add(gameObject.AddComponent<RotationLocomotion>());
+                foreach (Locomotion loco in Locomotions)
+                {
+                    loco.Player = this;
+                }
 
-            if (isLocal && LocalPlayer == null)
-            {
                 LocalPlayer = this;
                 // Hide head locally
                 foreach (MeshRenderer mesh in Head.Model.GetComponentsInChildren<MeshRenderer>())
@@ -69,7 +77,38 @@ namespace MTXR.Player
                 {
                     follower.enabled = false;
                 }
+                foreach (UnityEngine.InputSystem.XR.TrackedPoseDriver follower in GetComponentsInChildren<UnityEngine.InputSystem.XR.TrackedPoseDriver>())
+                {
+                    follower.enabled = false;
+                }
                 Head.Camera.enabled = false;
+            }
+        }
+
+        private void Update()
+        {
+            if (netView.IsOwned)
+            {
+                netView.EditField(1, transform.position);
+                netView.EditField(2, transform.rotation);
+                netView.EditField(3, Head.transform.position);
+                netView.EditField(4, Head.transform.rotation);
+                netView.EditField(5, LeftHand.transform.position);
+                netView.EditField(6, LeftHand.transform.rotation);
+                netView.EditField(7, RightHand.transform.position);
+                netView.EditField(8, RightHand.transform.rotation);
+                netView.Submit();
+            }
+            else if (netView.Authority != 0)
+            {
+                transform.position = Vector3.Lerp(transform.position, netView.GetField<Vector3>(1), Time.deltaTime * 20);
+                transform.rotation = Quaternion.Lerp(transform.rotation, netView.GetField<Quaternion>(2), Time.deltaTime * 20);
+                Head.transform.position = Vector3.Lerp(Head.transform.position, netView.GetField<Vector3>(3), Time.deltaTime * 20);
+                Head.transform.rotation = Quaternion.Lerp(Head.transform.rotation, netView.GetField<Quaternion>(4), Time.deltaTime * 20);
+                LeftHand.transform.position = Vector3.Lerp(LeftHand.transform.position, netView.GetField<Vector3>(5), Time.deltaTime * 20);
+                LeftHand.transform.rotation = Quaternion.Lerp(LeftHand.transform.rotation, netView.GetField<Quaternion>(6), Time.deltaTime * 20);
+                RightHand.transform.position = Vector3.Lerp(RightHand.transform.position, netView.GetField<Vector3>(7), Time.deltaTime * 20);
+                RightHand.transform.rotation = Quaternion.Lerp(RightHand.transform.rotation, netView.GetField<Quaternion>(8), Time.deltaTime * 20);
             }
         }
     }

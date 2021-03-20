@@ -14,8 +14,6 @@ namespace Megatowel.Multiplex
     {
         public const ushort MinPort = 1024;
         public const ushort MaxPort = 65535;
-        public const int SendRate = 30;
-        private float _sendRateDelta;
         
         public static event Action<MultiplexPacket> OnEvent;
         public static event Action<MultiplexErrors> OnError;
@@ -23,7 +21,6 @@ namespace Megatowel.Multiplex
         public static event Action<MultiplexPacket> OnUserDisconnectEvent;
         public static event Action OnSetup;
         public static event Action OnDisconnect;
-        public static event Action NetworkTick;
 
         /// <summary>
         /// The local player's user ID on the server.
@@ -205,12 +202,6 @@ namespace Megatowel.Multiplex
         {
             if (multiplex != null)
             {
-                _sendRateDelta += Time.unscaledDeltaTime;
-                if (_sendRateDelta > (float)SendRate / 1000)
-                {
-                    _sendRateDelta = 0f;
-                    NetworkTick?.Invoke();
-                }
                 Process();
             }
         }

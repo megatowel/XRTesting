@@ -736,6 +736,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7924244275635188136}
   - component: {fileID: 756852354}
+  - component: {fileID: 5853662270423287783}
   m_Layer: 6
   m_Name: XR Rig
   m_TagString: Player
@@ -775,6 +776,21 @@ MonoBehaviour:
   LeftHand: {fileID: 5195830635030883163}
   RightHand: {fileID: 1469232016}
   Locomotions: []
+--- !u!114 &5853662270423287783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7924244275635188137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13f56873b8568d74b976ae28cdf5a53b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SceneObject: 0
+  Exclusive: 1
+  SceneObjectId: f9acb88b-0722-4b92-8a92-f1a30d815fe9
 --- !u!1 &7924244276017058320
 GameObject:
   m_ObjectHideFlags: 0
