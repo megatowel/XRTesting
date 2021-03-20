@@ -57,6 +57,14 @@ public class RBFollower : MonoBehaviour
 
     Vector3 m_CurrentPosition = Vector3.zero;
     Quaternion m_CurrentRotation = Quaternion.identity;
+    Vector3 m_LastPosition = Vector3.zero;
+
+    float m_VelocityMag = 0.0f;
+    const float _handRBDistanceMaxMag = 0.05f;
+    const float _handRBDistanceMaxAngle = 15f;
+    float handMag = 0.0f;
+    float handAngle = 0.0f;
+
     bool m_RotationBound = false;
     bool m_PositionBound = false;
 
@@ -146,10 +154,6 @@ public class RBFollower : MonoBehaviour
 
     protected virtual void SetLocalTransform(Vector3 newPosition, Quaternion newRotation)
     {
-        handMag = ((transform.parent.TransformPoint(m_CurrentPosition) - rb.position).magnitude / _handRBDistanceMaxMag) / ((rb.velocity.magnitude < 1.0f) ? rb.velocity.magnitude : 1.0f);
-        handAngle = Quaternion.Angle((transform.parent.rotation * m_CurrentRotation).normalized, rb.rotation) / _handRBDistanceMaxAngle;
-        float vel = ((rb.velocity.magnitude < 1.0f) ? rb.velocity.magnitude : 1.0f);
-
         // Position
         rb.velocity = (transform.parent.TransformPoint(newPosition) - rb.position) / Time.fixedDeltaTime;
 
@@ -162,6 +166,9 @@ public class RBFollower : MonoBehaviour
         );
 
         rb.angularVelocity = eulerRotation / Time.fixedDeltaTime * Mathf.Deg2Rad;
+
+        handMag = (transform.parent.TransformPoint(m_CurrentPosition) - rb.position).magnitude / _handRBDistanceMaxMag / m_VelocityMag;
+        handAngle = Quaternion.Angle((transform.parent.rotation * m_CurrentRotation).normalized, rb.rotation) / _handRBDistanceMaxAngle;
     }
 
     protected virtual void OnDestroy()
@@ -173,12 +180,6 @@ public class RBFollower : MonoBehaviour
         SetLocalTransform(m_CurrentPosition, m_CurrentRotation);
     }
 
-    const float _handRBDistanceMaxMag = 0.15f;
-    const float _handRBDistanceMaxAngle = 15f;
-    float handMag = 0.0f;
-    float handAngle = 0.0f;
-
-
     protected virtual void UpdateCallback()
     {
         // i swear i'm not this crazy
@@ -188,6 +189,7 @@ public class RBFollower : MonoBehaviour
     }
     protected virtual void Update()
     {
-
+        m_VelocityMag = (m_CurrentPosition - m_LastPosition).magnitude / Time.deltaTime;
+        m_LastPosition = m_CurrentPosition;
     }
 }
