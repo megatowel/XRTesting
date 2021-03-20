@@ -126,7 +126,8 @@ namespace MTXR.Player.Movement
             // If the new position is valid, teleport there and we're done!
             if ((_state & TeleportState.Valid) != 0)
             {
-                ((XRControllerWithRumble)_device).SendImpulse(1f, 500f);
+                var command = UnityEngine.InputSystem.XR.Haptics.SendHapticImpulseCommand.Create(1, 0.5f, 0.025f);
+                _device.ExecuteCommand(ref command);
                 DoTeleport();
             }
         }
