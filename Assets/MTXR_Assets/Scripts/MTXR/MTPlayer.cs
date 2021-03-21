@@ -3,6 +3,7 @@ using UnityEngine;
 using MTXR.Player.Movement;
 using UnityEngine.AddressableAssets;
 using Megatowel.NetObject;
+using FMODUnity;
 
 namespace MTXR.Player
 {
@@ -52,8 +53,10 @@ namespace MTXR.Player
         /// </summary>
         private void SetupPlayer()
         {
+            gameObject.name = $"{netView.Authority} (Player)";
             if (netView.IsOwned && LocalPlayer == null)
             {
+                gameObject.name += " (LOCAL)";
                 // TODO: Locomotion networking.
                 Locomotions.Add(gameObject.AddComponent<TeleportLocomotion>());
                 Locomotions.Add(gameObject.AddComponent<RotationLocomotion>());
@@ -63,6 +66,7 @@ namespace MTXR.Player
                 }
 
                 LocalPlayer = this;
+
                 // Hide head locally
                 foreach (MeshRenderer mesh in Head.Model.GetComponentsInChildren<MeshRenderer>())
                 {
@@ -71,8 +75,12 @@ namespace MTXR.Player
             }
             else
             {
-                // Disable remote player's trackers & Camera
-                // TODO: RBFollower will not be used like this in the future.
+                gameObject.name += " (REMOTE)";
+                // Disable local things the remote player shouldn't have
+                foreach (StudioListener listener in GetComponentsInChildren<StudioListener>())
+                {
+                    listener.enabled = false;
+                }
                 foreach (RBFollower follower in GetComponentsInChildren<RBFollower>())
                 {
                     follower.enabled = false;

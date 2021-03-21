@@ -60,12 +60,12 @@ namespace MTXR.Player.Movement
                 case RotationStyle.Snap90:
                     if (rotationAction.triggered)
                     {
-                        Player.transform.localRotation *= Quaternion.AngleAxis(Mathf.Sign(rotationAction.ReadValue<Vector2>().x) * RotationSpeed, Player.transform.up);
+                        Player.transform.localRotation *= Quaternion.AngleAxis(Mathf.Sign(rotationAction.ReadValue<Vector2>().x) * RotationSpeed, Player.transform.worldToLocalMatrix * Player.transform.up);
                     }
                     break;
                 case RotationStyle.Continuous180:
                 case RotationStyle.Continuous360:
-                    Player.transform.localRotation *= Quaternion.AngleAxis(rotationAction.ReadValue<Vector2>().x * RotationSpeed * Time.deltaTime, Player.transform.up);
+                    Player.transform.localRotation *= Quaternion.AngleAxis(rotationAction.ReadValue<Vector2>().x * RotationSpeed * Time.deltaTime, Player.transform.worldToLocalMatrix * Player.transform.up);
                     break;
             }
         }

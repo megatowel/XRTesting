@@ -1,5 +1,4 @@
 // TODO: When networking has been implemented, make this only perform visuals if remote
-// TODO: Right now it just craps out objects, clean that up sometime
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -21,6 +20,12 @@ namespace MTXR.Player.Movement
         // Mask of Physics layers that the ray is allowed to hit.
         public LayerMask ValidTeleportLayers;
 
+        // Whether the player should be parented to the object they teleport on.
+        public bool ParentToDestination;
+
+        // Whether the player should be rotated to the normal of the point they teleport to.
+        public bool RotateToDestination;
+
         // The beginning position and angle of the ray.
         public Transform Origin;
 
@@ -41,7 +46,6 @@ namespace MTXR.Player.Movement
         // Is the device that is in control left handed, right handed, or neither?
         private string _handedness;
 
-
         private void Start()
         {
             ValidTeleportLayers = LayerMask.GetMask("Default");
@@ -49,6 +53,7 @@ namespace MTXR.Player.Movement
             _teleportLine.positionCount = 20;
             _teleportLine.widthMultiplier = 0.1f;
             _teleportLine.textureMode = LineTextureMode.Tile;
+            _teleportLine.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             _teleportLine.enabled = false;
 
             _teleportMarker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -58,6 +63,8 @@ namespace MTXR.Player.Movement
             _teleportMarker.transform.localScale = new Vector3(0.5f, 0.05f, 0.5f);
             _teleportMarker.transform.SetParent(Player.transform);
             _teleportMarker.SetActive(false);
+            Renderer markerRenderer = _teleportMarker.GetComponent<Renderer>();
+            markerRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 
             Addressables.LoadAssetAsync<Material>("TeleportBeam").Completed += (handle) =>
             {
@@ -65,7 +72,7 @@ namespace MTXR.Player.Movement
                 {
                     _teleportMaterial = handle.Result;
                     _teleportLine.material = _teleportMaterial;
-                    _teleportMarker.GetComponent<Renderer>().material = _teleportMaterial;
+                    markerRenderer.material = _teleportMaterial;
                 }
             };
 
@@ -133,10 +140,19 @@ namespace MTXR.Player.Movement
         }
 
         // Warp to the latest ray hit point.
-        private void DoTeleport()
+        private void DoTeleport(bool rotate = false, bool parent = false)
         {
-            // The valid check isn't in here by design.
             Player.transform.position = _teleportCastHit.point;
+
+            if (rotate)
+            {
+                Quaternion currentLocalRot = Player.transform.localRotation;
+                Player.transform.rotation = Quaternion.FromToRotation(Player.transform.worldToLocalMatrix * Player.transform.up, _teleportCastHit.normal) * Quaternion.Euler(0, Player.transform.rotation.eulerAngles.y, 0);
+            }
+            if (parent)
+            {
+                Player.transform.SetParent(_teleportCastHit.collider.transform);
+            }
         }
 
         // Update the ray and line every frame, and check if the chosen position is valid.
@@ -151,11 +167,22 @@ namespace MTXR.Player.Movement
                 // Check our contact point's validity.
                 if (contacted)
                 {
+                    _state |= TeleportState.Hit;
                     // Is the angle of our hit too steep?
-                    if (Vector3.Angle(_teleportCastHit.normal, Player.transform.up) <= MaxTeleportSteepness)
+                    if (!RotateToDestination && Vector3.Angle(_teleportCastHit.normal, Player.transform.up) <= MaxTeleportSteepness)
                     {
-                        // A valid hit has been made.
-                        _state |= TeleportState.Valid;
+                        // Is the player too tall for the destination?
+                        var heightRay = new Ray(_teleportCastHit.point, _teleportCastHit.normal);
+                        if (!DoRaycast(heightRay, (Player.transform.position - Player.Head.transform.position).magnitude, out _))
+                        {
+                            // A valid hit has been made.
+                            _state |= TeleportState.Valid;
+                        }
+                        else
+                        {
+                            // The player is too tall to teleport there.
+                            _state &= ~TeleportState.Valid;
+                        }
                     }
                     else
                     {
@@ -166,31 +193,37 @@ namespace MTXR.Player.Movement
                 else
                 {
                     // Nothing was hit.
+                    _state &= ~TeleportState.Hit;
                     _state &= ~TeleportState.Valid;
                 }
 
-                // Change the material's color depending on hit validity.
-                // TODO: This will not be needed eventually.
-                if ((_state & TeleportState.Valid) != 0)
+                // Show the teleport marker if anything was hit
+                if ((_state & TeleportState.Hit) != 0)
                 {
-                    _teleportMaterial.EnableKeyword("_ISVALID");
+                    _teleportMarker.transform.position = _teleportCastHit.point;
+                    _teleportMarker.transform.rotation = Quaternion.FromToRotation(Vector3.up, _teleportCastHit.normal);
                     _teleportMarker.SetActive(true);
                 }
                 else
                 {
-                    _teleportMaterial.DisableKeyword("_ISVALID");
                     _teleportMarker.SetActive(false);
                 }
 
+                // Change the material's color depending on hit validity.
+                if ((_state & TeleportState.Valid) != 0)
+                {
+                    _teleportMaterial.EnableKeyword("_ISVALID");
+                }
+                else
+                {
+                    _teleportMaterial.DisableKeyword("_ISVALID");
+                }
 
-
+                // Set the LineRenderer's points to the parabola points
                 for (int i = 0; i < points.Length; ++i)
                 {
                     _teleportLine.SetPosition(i, points[i]);
                 }
-
-                _teleportMarker.transform.position = _teleportCastHit.point;
-                _teleportMarker.transform.rotation = Quaternion.LookRotation(Vector3.forward, _teleportCastHit.normal);
             }
         }
 
@@ -280,8 +313,7 @@ namespace MTXR.Player.Movement
             None,
             Casting = 1 << 0,
             Valid = 1 << 1,
-            // TODO: Not implemented
-            Taper = 1 << 2,
+            Hit = 1 << 2,
         }
     }
 }

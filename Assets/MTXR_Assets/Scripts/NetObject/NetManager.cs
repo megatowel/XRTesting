@@ -132,13 +132,16 @@ namespace Megatowel.NetObject
                 NetManager.toSubmit.Add(netObj);
             }
         }
+
         internal static void SubmitField<T>(this NetObject netObj, byte fieldNum, T field)
         {
             netObj.unsubmittedfields[fieldNum] = field.ToBytes<T>();
         }
+
         internal static T GetField<T>(this NetObject netObj, byte fieldNum)
         {
             return netObj.fields[fieldNum].FromBytes<T>();
         }
+
     }
 }
