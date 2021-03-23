@@ -20,10 +20,10 @@ public class NetTest : NetBehaviour
     {
         if (Keyboard.current.cKey.wasPressedThisFrame)
         {
-            netView.Submit(true);
+            netView.RequestAuthority();
             UnityEngine.Debug.Log("we ownin");
         }
-        if (netView.IsOwned)
+        if (netView.authorityStatus != AuthorityStatus.RemoteAuthority)
         {
             _rb.constraints = RigidbodyConstraints.None;
             netView.EditField(1, transform.position);
@@ -49,7 +49,7 @@ public class NetTest : NetBehaviour
                 netView.EditField(1, transform.position);
                 netView.EditField(2, transform.rotation);
                 netView.EditField(3, _rb.velocity);
-                netView.Submit(true);
+                netView.RequestAuthority();
             }
         }
     }

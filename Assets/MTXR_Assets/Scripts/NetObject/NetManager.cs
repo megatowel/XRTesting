@@ -77,13 +77,17 @@ namespace Megatowel.NetObject
                 _dataRead.ReadByte();
                 foreach (NetObject netobj in NetObject.ReadFromBinaryReaders(_dataRead, _infoRead))
                 {
-                    if (!allViews.ContainsKey(netobj.id) && netobj.fields.ContainsKey(255))
+                    if (!allViews.ContainsKey(netobj.id) && netobj.remoteFields.ContainsKey(255))
                     {
                         SpawnNetAddressable(netobj.GetField<string>(255), netobj.id);
                     }
                     if (allViews.ContainsKey(netobj.id))
                     {
                         allViews[netobj.id]?.onObjectModify?.Invoke();
+                        if (allViews[netobj.id]?.authorityStatus == AuthorityStatus.RemoteAuthority)
+                        {
+                            netobj.SyncLocalToRemote();
+                        }
                     }
                 }
             }
@@ -120,10 +124,17 @@ namespace Megatowel.NetObject
         }
     }
 
+    public enum AuthorityStatus
+    {
+        LocalAuthority = 0,
+        RemoteAuthority = 1,
+        RequestingAuthority = 2
+    }
+
     internal static class NetExtensions {
         internal static void SubmitObject(this NetObject netObj, NetFlags flags)
         {
-            if (!flags.Equals(NetFlags.CreateFree))
+            if (flags != NetFlags.CreateFree)
             {
                 netObj.flags = flags;
             }
@@ -135,12 +146,12 @@ namespace Megatowel.NetObject
 
         internal static void SubmitField<T>(this NetObject netObj, byte fieldNum, T field)
         {
-            netObj.unsubmittedfields[fieldNum] = field.ToBytes<T>();
+            netObj.localFields[fieldNum] = field.ToBytes<T>();
         }
 
         internal static T GetField<T>(this NetObject netObj, byte fieldNum)
         {
-            return netObj.fields[fieldNum].FromBytes<T>();
+            return netObj.remoteFields[fieldNum].FromBytes<T>();
         }
 
     }

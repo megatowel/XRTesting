@@ -18,6 +18,10 @@ namespace Megatowel.NetObject
         public NetObject netObject { get; private set; }
         public Action onObjectModify;
 
+        public AuthorityStatus authorityStatus = AuthorityStatus.RemoteAuthority;
+        private float _requestHangTime = 0.0f;
+        private const float _maxHangTime = 1.0f;
+
         public bool IsOwned
         {
             get
@@ -34,11 +38,35 @@ namespace Megatowel.NetObject
             }
         }
 
-        // TODO: remove temporary submission method, as this should be automatic.
-        // also, we should have neat methods for sending and getting stuff.
-        public void Submit(bool getOwner = false)
+        public void RequestAuthority()
         {
-            netObject.SubmitObject(getOwner ? NetFlags.RequestAuthority : NetFlags.CreateFree);
+            _requestHangTime = 0.0f;
+            authorityStatus = AuthorityStatus.RequestingAuthority;
+            netObject.SubmitObject(NetFlags.RequestAuthority);
+        }
+
+        private void Update()
+        {
+            if (IsOwned)
+            {
+                authorityStatus = AuthorityStatus.LocalAuthority;
+            }
+            if (authorityStatus == AuthorityStatus.RequestingAuthority) {
+                _requestHangTime += Time.deltaTime;
+                if (_requestHangTime >= _maxHangTime)
+                {
+                    authorityStatus = AuthorityStatus.RemoteAuthority;
+                }
+            }
+            else if (!IsOwned)
+            {
+                authorityStatus = AuthorityStatus.RemoteAuthority;
+            }
+        }
+
+        public void Submit()
+        {
+            netObject.SubmitObject(NetFlags.CreateFree);
         }
 
         public void EditField<T>(byte fieldNum, T obj)

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Megatowel.NetObject
@@ -18,7 +19,7 @@ namespace Megatowel.NetObject
     public class NetObject : IDisposable
     {
         public Guid id;
-        public bool synced = false;
+        public bool remote = false;
 
         internal NetFlags flags;
 
@@ -26,16 +27,16 @@ namespace Megatowel.NetObject
         {
             get
             {
-                if (fields.ContainsKey(0))
-                    return BitConverter.ToUInt64(fields[0], 0);
+                if (remoteFields.ContainsKey(0))
+                    return BitConverter.ToUInt64(remoteFields[0], 0);
                 else
                     return 0;
             }
         }
 
-        public Dictionary<byte, byte[]> fields = new Dictionary<byte, byte[]>();
+        public Dictionary<byte, byte[]> remoteFields = new Dictionary<byte, byte[]>();
 
-        internal Dictionary<byte, byte[]> unsubmittedfields = new Dictionary<byte, byte[]>();
+        public Dictionary<byte, byte[]> localFields = new Dictionary<byte, byte[]>();
 
         private static Dictionary<Guid, NetObject> _instances = new Dictionary<Guid, NetObject>();
         private MemoryStream _fieldStream = new MemoryStream();
@@ -72,22 +73,27 @@ namespace Megatowel.NetObject
         internal void SubmitToBinaryWriters(BinaryWriter data, BinaryWriter info, NetFlags flags, bool submitAll = false)
         {
             _fieldStream.SetLength(0);
-            foreach (KeyValuePair<byte, byte[]> pair in unsubmittedfields)
+            foreach (KeyValuePair<byte, byte[]> pair in localFields)
             {
-                if (submitAll || !fields.ContainsKey(pair.Key) || !fields[pair.Key].Equals(pair.Value))
+                if (pair.Key == 0)
+                {
+                    continue; // Skip the authority key.
+                }
+                if (submitAll || !remoteFields.ContainsKey(pair.Key) || !remoteFields[pair.Key].SequenceEqual(pair.Value))
                 {
                     _fieldBytes.Write(pair.Key);
                     _fieldBytes.Write((ushort)pair.Value.Length);
                     _fieldBytes.Write(pair.Value);
-                    // redoing this submitted fields thing. it may just end up being "server side" fields
-                    // submittedfields[pair.Key] = pair.Value;
                 }
             }
-            info.Write(id.ToByteArray());
-            info.Write((byte)flags);
-            info.Write((ushort)_fieldStream.Position);
-            data.Write(_fieldStream.ToArray());
-            unsubmittedfields.Clear();
+            // Don't push to writers if we did nothing. But push if we have flags to give, isn't on remote, or if forced.
+            if (_fieldStream.Position != 0 || flags != NetFlags.CreateFree || submitAll || !remote)
+            {
+                info.Write(id.ToByteArray());
+                info.Write((byte)flags);
+                info.Write((ushort)_fieldStream.Position);
+                data.Write(_fieldStream.ToArray());
+            }
         }
 
         internal static IEnumerable<NetObject> ReadFromBinaryReaders(BinaryReader data, BinaryReader info)
@@ -102,6 +108,7 @@ namespace Megatowel.NetObject
             {
                 Guid remoteId = new Guid(info.ReadBytes(16));
                 NetObject remoteObj = NetObject.GetNetObject(remoteId);
+                remoteObj.remote = true;
                 info.ReadByte(); // ignore it for now ;/
                 //remoteObj.flags = (NetFlags)info.ReadByte();
 
@@ -110,9 +117,22 @@ namespace Megatowel.NetObject
                 while ((data.BaseStream.Position - lastPosition) < dataLength)
                 {
                     byte key = data.ReadByte();
-                    remoteObj.fields[key] = data.ReadBytes(data.ReadUInt16());
+                    remoteObj.remoteFields[key] = data.ReadBytes(data.ReadUInt16());
                 }
                 yield return remoteObj;
+            }
+        }
+
+        internal void SyncLocalToRemote()
+        {
+            localFields.Clear();
+            foreach (KeyValuePair<byte, byte[]> pair in remoteFields)
+            {
+                if (pair.Key == 0)
+                {
+                    continue; // Skip the authority key.
+                }
+                localFields[pair.Key] = pair.Value;
             }
         }
 
