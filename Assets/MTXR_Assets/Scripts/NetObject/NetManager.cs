@@ -149,9 +149,16 @@ namespace Megatowel.NetObject
             netObj.localFields[fieldNum] = field.ToBytes<T>();
         }
 
-        internal static T GetField<T>(this NetObject netObj, byte fieldNum)
+        internal static T GetField<T>(this NetObject netObj, byte fieldNum, bool fromLocal = false)
         {
-            return netObj.remoteFields[fieldNum].FromBytes<T>();
+            if (fromLocal)
+            {
+                return netObj.localFields[fieldNum].FromBytes<T>();
+            }
+            else
+            {
+                return netObj.remoteFields[fieldNum].FromBytes<T>();
+            }
         }
 
     }

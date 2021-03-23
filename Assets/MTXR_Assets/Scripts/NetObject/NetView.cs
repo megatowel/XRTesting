@@ -26,6 +26,10 @@ namespace Megatowel.NetObject
         {
             get
             {
+                if (netObject == null || MultiplexManager.Self == 0)
+                {
+                    return false;
+                }
                 return MultiplexManager.Self == netObject.Authority;
             }
         }
@@ -79,6 +83,11 @@ namespace Megatowel.NetObject
             return netObject.GetField<T>(fieldNum);
         }
 
+        public T GetLocalField<T>(byte fieldNum)
+        {
+            return netObject.GetField<T>(fieldNum, true);
+        }
+
         private void Start()
         {
             if (SceneObject)
@@ -105,6 +114,7 @@ namespace Megatowel.NetObject
                 NetManager.allViews[objId] = this;
                 netObject.SubmitField(255, address);
                 netObject.SubmitObject(Exclusive ? NetFlags.CreateExclusive : NetFlags.RequestAuthority);
+                authorityStatus = AuthorityStatus.RequestingAuthority;
             }
         }
 

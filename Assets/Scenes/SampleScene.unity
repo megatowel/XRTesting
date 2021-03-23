@@ -157,6 +157,7 @@ MonoBehaviour:
   SceneObject: 1
   Exclusive: 0
   SceneObjectId: 78c0a187-8089-426b-906a-072a75ba103d
+  authorityStatus: 1
 --- !u!54 &85073214
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -252,6 +253,7 @@ MonoBehaviour:
   SceneObject: 1
   Exclusive: 0
   SceneObjectId: 54c66a40-90f9-48a4-bbe7-a8c261bcc177
+  authorityStatus: 1
 --- !u!54 &178468361
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -627,6 +629,7 @@ MonoBehaviour:
   SceneObject: 1
   Exclusive: 0
   SceneObjectId: d4388384-ed90-4da4-847a-0177c4e81e32
+  authorityStatus: 1
 --- !u!114 &322942023
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -673,6 +676,7 @@ MonoBehaviour:
   SceneObject: 1
   Exclusive: 0
   SceneObjectId: 197017a6-cd93-472c-8554-73412ee0ae37
+  authorityStatus: 1
 --- !u!54 &485631674
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -919,6 +923,7 @@ MonoBehaviour:
   SceneObject: 1
   Exclusive: 0
   SceneObjectId: eca6c570-2c61-4ceb-a624-4425715c6f4c
+  authorityStatus: 1
 --- !u!114 &844320238
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1073,6 +1078,7 @@ MonoBehaviour:
   SceneObject: 1
   Exclusive: 0
   SceneObjectId: 19cfd3d9-c349-4367-b83a-2bb41bd6430e
+  authorityStatus: 1
 --- !u!1 &1038584527 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1973017577027654, guid: 85dfab9623c67784fa7894de63cd1604, type: 3}
@@ -1107,6 +1113,7 @@ MonoBehaviour:
   SceneObject: 1
   Exclusive: 0
   SceneObjectId: 4397cb5f-4668-444a-8b3d-b65d4a7e5467
+  authorityStatus: 1
 --- !u!54 &1038584531
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1238,6 +1245,7 @@ MonoBehaviour:
   SceneObject: 1
   Exclusive: 0
   SceneObjectId: a9657c0a-bf98-40f9-a4f4-cef832436cb3
+  authorityStatus: 1
 --- !u!54 &1435447696
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1286,7 +1294,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1439915057
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1314,6 +1322,7 @@ MonoBehaviour:
   SceneObject: 1
   Exclusive: 0
   SceneObjectId: 23ccf5f4-1823-4d21-a452-e718023effff
+  authorityStatus: 1
 --- !u!135 &1439915059
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1575,6 +1584,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1276977031640302, guid: 85dfab9623c67784fa7894de63cd1604, type: 3}
       propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1470751580683984, guid: 85dfab9623c67784fa7894de63cd1604, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1477202399192370, guid: 85dfab9623c67784fa7894de63cd1604, type: 3}
@@ -1877,6 +1890,7 @@ MonoBehaviour:
   SceneObject: 1
   Exclusive: 0
   SceneObjectId: dc32504d-64ef-47fd-9f5e-21e64b18254b
+  authorityStatus: 1
 --- !u!1 &2138394473
 GameObject:
   m_ObjectHideFlags: 0

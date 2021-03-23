@@ -10,7 +10,6 @@ using System.Diagnostics;
 public class NetTest : NetBehaviour
 {
     private Rigidbody _rb;
-
     void Awake()
     {
         _rb = GetComponent<Rigidbody>();
@@ -29,6 +28,7 @@ public class NetTest : NetBehaviour
             netView.EditField(1, transform.position);
             netView.EditField(2, transform.rotation);
             netView.EditField(3, _rb.velocity);
+            netView.EditField(4, _rb.angularVelocity);
             netView.Submit();
         }
         else if (netView.Authority != 0)
@@ -37,6 +37,7 @@ public class NetTest : NetBehaviour
             transform.position = Vector3.Lerp(transform.position, netView.GetField<Vector3>(1), Time.deltaTime * 20);
             transform.rotation = Quaternion.Lerp(transform.rotation, netView.GetField<Quaternion>(2), Time.deltaTime * 20);
             _rb.velocity = Vector3.Lerp(_rb.velocity, netView.GetField<Vector3>(3), Time.deltaTime * 20);
+            _rb.angularVelocity = Vector3.Lerp(_rb.angularVelocity, netView.GetField<Vector3>(4), Time.deltaTime * 20);
         }
     }
 

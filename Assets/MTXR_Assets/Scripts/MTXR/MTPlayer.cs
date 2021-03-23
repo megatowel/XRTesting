@@ -54,7 +54,7 @@ namespace MTXR.Player
         private void SetupPlayer()
         {
             gameObject.name = $"{netView.Authority} (Player)";
-            if (netView.IsOwned && LocalPlayer == null)
+            if (netView.authorityStatus != AuthorityStatus.RemoteAuthority && LocalPlayer == null)
             {
                 gameObject.name += " (LOCAL)";
                 // TODO: Locomotion networking.
@@ -91,6 +91,7 @@ namespace MTXR.Player
                 }
                 Head.Camera.enabled = false;
             }
+            Debug.Log(gameObject.name);
         }
 
         private void Update()
