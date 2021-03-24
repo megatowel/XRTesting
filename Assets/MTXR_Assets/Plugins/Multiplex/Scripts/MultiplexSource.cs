@@ -66,10 +66,10 @@ namespace Megatowel.Multiplex
                 {
                     cbsize = Marshal.SizeOf(new CREATESOUNDEXINFO()),
                     format = SOUND_FORMAT.PCM16,
-                    length = 960 * 2,
+                    length = 960 * 4,
                     numchannels = 1,
                     defaultfrequency = 48000,
-                    decodebuffersize = 960 * 2,
+                    decodebuffersize = 960 * 4,
                     pcmreadcallback = pcmcallback,
                     userdata = userptr
 
@@ -97,16 +97,16 @@ namespace Megatowel.Multiplex
             newsound.getUserData(out IntPtr userptr);
             UserData userData = (UserData)Marshal.PtrToStructure(userptr, typeof(UserData));
             MultiplexSource instance = _instances[userData.User];
-            short[] temp = new short[datalen / 2];
-            if (instance.Buffer.Count < datalen / 2 && !instance.State)
+            short[] temp = new short[datalen];
+            if (instance.Buffer.Count < datalen && !instance.State)
             {
                 // It actually may give us old data back, so we need to start fresh.
-                Marshal.Copy(temp, 0, data, (int)datalen / 2);
+                Marshal.Copy(temp, 0, data, (int)datalen);
 
                 return RESULT.OK;
             }
 
-            while (instance.Buffer.Count < datalen / 2)
+            while (instance.Buffer.Count < datalen)
             {
                 if (instance.State)
                 {
@@ -120,11 +120,11 @@ namespace Megatowel.Multiplex
                     break;
                 }
             }
-            for (int i = 0; i < (int)datalen / 2; i++)
+            for (int i = 0; i < (int)datalen; i++)
             {
                 instance.Buffer.TryDequeue(out temp[i]);
             }
-            Marshal.Copy(temp, 0, data, (int)datalen / 2);
+            Marshal.Copy(temp, 0, data, (int)datalen);
             return RESULT.OK; // This doesn't actually matter
         }
 
