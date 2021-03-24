@@ -97,16 +97,16 @@ namespace Megatowel.Multiplex
             newsound.getUserData(out IntPtr userptr);
             UserData userData = (UserData)Marshal.PtrToStructure(userptr, typeof(UserData));
             MultiplexSource instance = _instances[userData.User];
-            short[] temp = new short[datalen];
-            if (instance.Buffer.Count < datalen && !instance.State)
+            short[] temp = new short[datalen / 2];
+            if (instance.Buffer.Count < datalen / 2 && !instance.State)
             {
                 // It actually may give us old data back, so we need to start fresh.
-                Marshal.Copy(temp, 0, data, (int)datalen);
+                Marshal.Copy(temp, 0, data, (int)datalen / 2);
 
                 return RESULT.OK;
             }
 
-            while (instance.Buffer.Count < datalen)
+            while (instance.Buffer.Count < datalen / 2)
             {
                 if (instance.State)
                 {
@@ -120,11 +120,11 @@ namespace Megatowel.Multiplex
                     break;
                 }
             }
-            for (int i = 0; i < (int)datalen; i++)
+            for (int i = 0; i < (int)datalen / 2; i++)
             {
                 instance.Buffer.TryDequeue(out temp[i]);
             }
-            Marshal.Copy(temp, 0, data, (int)datalen);
+            Marshal.Copy(temp, 0, data, (int)datalen / 2);
             return RESULT.OK; // This doesn't actually matter
         }
 
