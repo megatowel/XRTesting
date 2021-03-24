@@ -58,7 +58,7 @@ namespace Megatowel.Multiplex.Extensions
             }
             if (typeof(T) == typeof(byte[])) {
                 byte[] bytes = (byte[])(object)obj;
-                writer.Write((ushort)(object)bytes.Length);
+                writer.Write((ushort)bytes.Length);
                 writer.Write(bytes);
             }
             if (typeof(T) == typeof(Vector2)) {

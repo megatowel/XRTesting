@@ -6,102 +6,73 @@ using System;
 using Megatowel.Debugging;
 using UnityEngine;
 using System.Text;
+using Zenject;
 
 namespace Megatowel.Multiplex
 {
-    public class MultiplexVoice : MonoBehaviour
+    public class MultiplexVoice : IInitializable, IDisposable
     {
-        public static event Action<MultiplexVoiceData> OnVoiceDecoded;
-
-        private Dictionary<ulong, OpusDecoder> decoders = new Dictionary<ulong, OpusDecoder>();
-        private Dictionary<ulong, MultiplexSource> speakers = new Dictionary<ulong, MultiplexSource>();
         private static OpusEncoder encoder;
 
-        void OnEnable()
+        private byte[] guidBytes = new byte[16];
+
+        public void Initialize()
         {
+            CreateSink();
             encoder = new OpusEncoder(SamplingRate.Sampling48000, Channels.Stereo);
             MultiplexManager.OnEvent += Process;
-            MultiplexManager.OnUserConnectEvent += UserDisconnected;
         }
 
-        private void OnDisable()
+
+        public void Dispose()
         {
             MultiplexManager.OnEvent -= Process;
-            foreach (var decoder in decoders)
+            foreach (var source in MultiplexSource._instances)
             {
-                decoder.Value.Dispose();
+                GameObject.Destroy(source.Value);
             }
-            decoders.Clear();
             encoder.Dispose();
         }
 
-        private void Start()
-        {
-            CreateSink();
-        }
-
-        void CreateSink()
+        // TODO: More settings for sink, and the ability to have multiple.
+        private void CreateSink()
         {
             var obj = new GameObject();
-            var sink = obj.AddComponent<MultiplexSink>();
-        }
-
-        private void UserDisconnected(MultiplexPacket ev)
-        {
-            if (decoders.ContainsKey(ev.User))
-            {
-                Destroy(speakers[ev.User]);
-                decoders[ev.User].Dispose();
-                decoders.Remove(ev.User);
-            }
+            obj.AddComponent<MultiplexSink>();
+            obj.name = $"Sink ID {MultiplexSink.streamId}";
         }
 
         void Process(MultiplexPacket ev)
         {
-            if (ev.Info.text == "opus")
+            if (ev.Info.bytes[0] == 2)
             {
-                if (!decoders.ContainsKey(ev.User))
-                {
-                    decoders.Add(ev.User, new OpusDecoder(SamplingRate.Sampling48000, Channels.Stereo));
-                }
+                Array.Copy(ev.Info.bytes, 1, guidBytes, 0, 16);
+                Guid guid = new Guid(guidBytes);
 
-                if (!speakers.ContainsKey(ev.User))
+                if (MultiplexSource._instances.ContainsKey(guid))
                 {
-                    var obj = new GameObject();
-                    var speaker = obj.AddComponent<MultiplexSource>();
-                    speaker.UserId = ev.User;
-                    speakers.Add(ev.User, speaker);
-                }
+                    MultiplexSource speaker = MultiplexSource._instances[guid];
 
-                if (ev.Data.text == "END")
-                {
-                    OnVoiceDecoded?.Invoke(new MultiplexVoiceData(ev.User, new short[1920], decoders[ev.User], true));
-                    return;
+                    if (ev.Data.text == "END")
+                    {
+                        speaker.Process(null, true);
+                    }
+                    else
+                    {
+                        speaker.Process(ev.Data.bytes, false);
+                    }
                 }
-
-                OnVoiceDecoded?.Invoke(new MultiplexVoiceData(ev.User, decoders[ev.User].DecodePacket(ev.Data.bytes), decoders[ev.User], false));
             }
         }
 
         public static void Send(short[] audio, uint channel)
         {
             byte[] data = encoder.Encode(audio);
-            MultiplexManager.Send(new MultiplexPacket("opus", new MultiplexData(data), channel));
-        }
-    }
+            byte[] info = new byte[17];
+            info[0] = 2;
+            Array.Copy(MultiplexSink.streamId.ToByteArray(), 0, info, 1, 16);
 
-    public struct MultiplexVoiceData
-    {
-        public MultiplexVoiceData(ulong user, short[] audio, OpusDecoder state, bool ended)
-        {
-            User = user;
-            Audio = audio;
-            State = state;
-            Ended = ended;
+            MultiplexManager.Send(new MultiplexPacket(new MultiplexData(info), new MultiplexData(data), channel));
         }
-        public ulong User;
-        public short[] Audio;
-        public OpusDecoder State;
-        public bool Ended;
     }
 }

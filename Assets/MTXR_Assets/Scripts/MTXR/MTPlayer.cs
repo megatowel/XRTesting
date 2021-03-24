@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using MTXR.Player.Movement;
 using UnityEngine.AddressableAssets;
+using Megatowel.Multiplex;
 using Megatowel.NetObject;
 using FMODUnity;
+using System;
 
 namespace MTXR.Player
 {
@@ -72,6 +74,8 @@ namespace MTXR.Player
                 {
                     mesh.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
                 }
+
+                netView.EditField(16, MultiplexSink.streamId.ToByteArray());
             }
             else
             {
@@ -90,6 +94,7 @@ namespace MTXR.Player
                     follower.enabled = false;
                 }
                 Head.Camera.enabled = false;
+                MultiplexSource.CreateSource(new Guid(netView.GetField<byte[]>(16)), transform);
             }
             Debug.Log(gameObject.name);
         }

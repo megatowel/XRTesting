@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using FMOD;
 using FMODUnity;
 using POpusCodec;
+using POpusCodec.Enums;
 using UnityEngine;
 using Megatowel.Debugging;
 using AOT;
@@ -13,56 +14,51 @@ namespace Megatowel.Multiplex
 {
     public class MultiplexSource : MonoBehaviour
     {
-        public ulong UserId;
+        public Guid Id;
 
         private Sound sound;
         private ChannelGroup master;
 
-        private static Dictionary<ulong, OpusDecoder> states = new Dictionary<ulong, OpusDecoder>();
-        private static Dictionary<ulong, ConcurrentQueue<short>> buffers = new Dictionary<ulong, ConcurrentQueue<short>>();
-        private static Dictionary<ulong, bool> validStates = new Dictionary<ulong, bool>();
+        internal OpusDecoder Decoder = new OpusDecoder(SamplingRate.Sampling48000, Channels.Stereo);
+        internal ConcurrentQueue<short> Buffer = new ConcurrentQueue<short>();
+        internal bool State = false;
 
-        private void OnEnable()
+        internal static Dictionary<Guid, MultiplexSource> _instances = new Dictionary<Guid, MultiplexSource>();
+
+        public static MultiplexSource CreateSource(Guid id, Transform parent = null)
         {
-            MultiplexVoice.OnVoiceDecoded += Process;
+            var obj = new GameObject();
+            MultiplexSource speaker = obj.AddComponent<MultiplexSource>();
+            if (parent)
+            {
+                obj.transform.parent = parent;
+            }
+            speaker.Id = id;
+            MultiplexSource._instances[id] = speaker;
+            obj.name = $"Source ID {id}";
+            return speaker;
         }
 
-        private void OnDisable()
+        internal void Process(byte[] data, bool state)
         {
-            sound.release();
-            MultiplexVoice.OnVoiceDecoded -= Process;
-        }
+            State = state;
 
-        private void Process(MultiplexVoiceData data)
-        {
-            if (UserId != data.User)
-                return;
-            // This is all because of some stupid thread crap
-            if (!states.ContainsKey(UserId))
-                states.Add(UserId, data.State);
-
-            if (!buffers.ContainsKey(UserId))
-                buffers.Add(UserId, new ConcurrentQueue<short>());
-
-            if (!validStates.ContainsKey(UserId))
-                validStates.Add(UserId, false);
-
-            validStates[UserId] = !data.Ended;
-
-            if (data.Audio != null)
+            if (data != null)
             {
                 sound.getOpenState(out OPENSTATE openstate, out _, out _, out _);
 
-                foreach (short pcm in data.Audio)
+                short[] _audio = Decoder.DecodePacket(data);
+
+                foreach (short pcm in _audio)
                 {
-                    buffers[UserId].Enqueue(pcm);
+                    Buffer.Enqueue(pcm);
                 }
 
             }
 
             if (sound.handle.ToInt32() == 0)
             {
-                UserData userData = new UserData(data.User);
+                UserData userData = new UserData(Id);
                 IntPtr userptr = Marshal.AllocHGlobal(Marshal.SizeOf(userData));
                 Marshal.StructureToPtr(userData, userptr, true);
                 CREATESOUNDEXINFO info = new CREATESOUNDEXINFO
@@ -78,7 +74,7 @@ namespace Megatowel.Multiplex
 
                 };
 
-                RuntimeManager.CoreSystem.createSound(data.User.ToString(), MODE.OPENUSER | MODE.LOOP_NORMAL | MODE._3D | MODE.CREATESTREAM, ref info, out sound);
+                RuntimeManager.CoreSystem.createSound(Id.ToString(), MODE.OPENUSER | MODE.LOOP_NORMAL | MODE._3D | MODE.CREATESTREAM, ref info, out sound);
                 RuntimeManager.CoreSystem.getMasterChannelGroup(out master);
                 RuntimeManager.CoreSystem.playSound(sound, master, false, out _);
             }
@@ -93,9 +89,9 @@ namespace Megatowel.Multiplex
             };
             newsound.getUserData(out IntPtr userptr);
             UserData userData = (UserData)Marshal.PtrToStructure(userptr, typeof(UserData));
-            ulong userid = userData.User;
+            MultiplexSource instance = _instances[userData.User];
             short[] temp = new short[datalen / 2];
-            if (buffers[userid].Count < datalen / 2 && !validStates[userid])
+            if (instance.Buffer.Count < datalen / 2 && !instance.State)
             {
                 // It actually may give us old data back, so we need to start fresh.
                 Marshal.Copy(temp, 0, data, (int)datalen / 2);
@@ -103,13 +99,13 @@ namespace Megatowel.Multiplex
                 return RESULT.OK;
             }
 
-            while (buffers[userid].Count < datalen / 2)
+            while (instance.Buffer.Count < datalen / 2)
             {
-                if (validStates[userid])
+                if (instance.State)
                 {
-                    foreach (short pcm in states[userid].DecodePacketLost())
+                    foreach (short pcm in instance.Decoder.DecodePacketLost())
                     {
-                        buffers[userid].Enqueue(pcm);
+                        instance.Buffer.Enqueue(pcm);
                     }
                 }
                 else
@@ -119,19 +115,26 @@ namespace Megatowel.Multiplex
             }
             for (int i = 0; i < (int)datalen / 2; i++)
             {
-                buffers[userid].TryDequeue(out temp[i]);
+                instance.Buffer.TryDequeue(out temp[i]);
             }
             Marshal.Copy(temp, 0, data, (int)datalen / 2);
             return RESULT.OK; // This doesn't actually matter
         }
 
+        public void OnDestroy()
+        {
+            _instances.Remove(Id);
+            Decoder.Dispose();
+            sound.release();
+        }
+
         public struct UserData
         {
-            public UserData(ulong user)
+            public UserData(Guid user)
             {
                 this.User = user;
             }
-            public ulong User;
+            public Guid User;
         }
     }
 }

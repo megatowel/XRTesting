@@ -13,7 +13,7 @@ using UnityEngine.Android;
 
 namespace Megatowel.Multiplex
 {
-    internal class MultiplexSink : MonoBehaviour
+    public class MultiplexSink : MonoBehaviour
     {
         private int deviceId;
         private static ConcurrentQueue<short> buffer = new ConcurrentQueue<short>();
@@ -21,6 +21,7 @@ namespace Megatowel.Multiplex
         private uint lastPos, length, totallength;
 
         public static FMOD.System RecordSystem;
+        public static Guid streamId = Guid.NewGuid();
 
         private void Start()
         {
@@ -44,7 +45,6 @@ namespace Megatowel.Multiplex
 #else
             RecordSystem = RuntimeManager.CoreSystem;
 #endif
-
             RESULT result;
             result = RecordSystem.getRecordNumDrivers(out int numdrivers, out _);
             if (result != 0)
