@@ -18,6 +18,7 @@ namespace Megatowel.Multiplex
 
         private Sound sound;
         private ChannelGroup master;
+        private Channel channel;
 
         internal OpusDecoder Decoder = new OpusDecoder(SamplingRate.Sampling48000, Channels.Stereo);
         internal ConcurrentQueue<short> Buffer = new ConcurrentQueue<short>();
@@ -76,8 +77,14 @@ namespace Megatowel.Multiplex
 
                 RuntimeManager.CoreSystem.createSound(Id.ToString(), MODE.OPENUSER | MODE.LOOP_NORMAL | MODE._3D | MODE.CREATESTREAM, ref info, out sound);
                 RuntimeManager.CoreSystem.getMasterChannelGroup(out master);
-                RuntimeManager.CoreSystem.playSound(sound, master, false, out _);
+                RuntimeManager.CoreSystem.playSound(sound, master, false, out channel);
             }
+        }
+
+        void Update()
+        {
+            var attributes = RuntimeUtils.To3DAttributes(gameObject);
+            channel.set3DAttributes(ref attributes.position, ref attributes.velocity);
         }
 
         [MonoPInvokeCallback(typeof(RESULT))]
