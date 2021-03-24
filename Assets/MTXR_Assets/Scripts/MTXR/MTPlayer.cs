@@ -94,7 +94,7 @@ namespace MTXR.Player
                     follower.enabled = false;
                 }
                 Head.Camera.enabled = false;
-                MultiplexSource.CreateSource(new Guid(netView.GetField<byte[]>(16)), transform);
+                MultiplexSource.CreateSource(new Guid(netView.GetField<byte[]>(16)), Head.transform);
             }
             Debug.Log(gameObject.name);
         }
