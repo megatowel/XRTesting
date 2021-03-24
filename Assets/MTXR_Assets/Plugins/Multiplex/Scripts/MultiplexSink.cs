@@ -2,6 +2,7 @@
 using FMODUnity;
 using Megatowel.Debugging;
 using POpusCodec;
+using POpusCodec.Enums;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -22,6 +23,9 @@ namespace Megatowel.Multiplex
 
         public static FMOD.System RecordSystem;
         public static Guid streamId = Guid.NewGuid();
+        private static OpusEncoder encoder = new OpusEncoder(SamplingRate.Sampling48000, Channels.Mono);
+
+        private const float _chunkSizeInSeconds = 0.4f;
 
         private void Start()
         {
@@ -70,6 +74,9 @@ namespace Megatowel.Multiplex
                     MTDebug.Log($"{guid} : {name}, channels: {channels} [{state}], rate: {rate}");
                 }
             }
+
+            channels = 1;
+
             CREATESOUNDEXINFO exdata = new CREATESOUNDEXINFO();
             exdata.cbsize = Marshal.SizeOf(exdata);
             exdata.numchannels = channels;
@@ -132,27 +139,33 @@ namespace Megatowel.Multiplex
             sound.unlock(ptr1, ptr2, len1, len2);
             lastPos = position;
 
-            while (buffer.Count >= 48000 * 0.02 * channels) // Whenever we get enough to make an opus packet
+            while (buffer.Count >= 48000 * _chunkSizeInSeconds * channels) // Whenever we get enough to make an opus packet
             {
-                short[] opusBuffer = new short[(int)(48000 * 0.02 * 2)];
-                if (channels == 1)
+                short[] opusBuffer = new short[(int)(48000 * _chunkSizeInSeconds * channels)];
+                if (channels == 1 && encoder.InputChannels == Channels.Stereo)
                 {
-                    for (int i = 0; i < 48000 * 0.02; i++)
+                    for (int i = 0; i < 48000 * _chunkSizeInSeconds; i++)
                     {
                         buffer.TryDequeue(out short popped);
                         opusBuffer[i * 2] = popped;
                         opusBuffer[(i * 2) + 1] = popped;
                     }
                 }
-                else if (channels == 2)
+                else if (channels == 2 || encoder.InputChannels == Channels.Mono)
                 {
-                    for (int i = 0; i < 48000 * 0.02 * 2; i++)
+                    for (int i = 0; i < 48000 * _chunkSizeInSeconds * channels; i++)
                     {
                         buffer.TryDequeue(out opusBuffer[i]);
                     }
                 }
-                MultiplexVoice.Send(opusBuffer, 1);
+                MultiplexVoice.Send(encoder.Encode(opusBuffer), 1);
             }
+        }
+
+        private void OnDestroy()
+        {
+            encoder.Dispose();
+            sound.release();
         }
     }
 }

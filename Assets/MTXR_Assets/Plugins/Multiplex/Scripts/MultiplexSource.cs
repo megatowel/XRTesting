@@ -20,7 +20,7 @@ namespace Megatowel.Multiplex
         private ChannelGroup master;
         private Channel channel;
 
-        internal OpusDecoder Decoder = new OpusDecoder(SamplingRate.Sampling48000, Channels.Stereo);
+        internal OpusDecoder Decoder = new OpusDecoder(SamplingRate.Sampling48000, Channels.Mono);
         internal ConcurrentQueue<short> Buffer = new ConcurrentQueue<short>();
         internal bool State = false;
 
@@ -67,7 +67,7 @@ namespace Megatowel.Multiplex
                     cbsize = Marshal.SizeOf(new CREATESOUNDEXINFO()),
                     format = SOUND_FORMAT.PCM16,
                     length = 960 * 2,
-                    numchannels = 2,
+                    numchannels = 1,
                     defaultfrequency = 48000,
                     decodebuffersize = 960 * 2,
                     pcmreadcallback = pcmcallback,

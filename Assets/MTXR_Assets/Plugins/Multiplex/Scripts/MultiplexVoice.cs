@@ -12,14 +12,11 @@ namespace Megatowel.Multiplex
 {
     public class MultiplexVoice : IInitializable, IDisposable
     {
-        private static OpusEncoder encoder;
-
         private byte[] guidBytes = new byte[16];
 
         public void Initialize()
         {
             CreateSink();
-            encoder = new OpusEncoder(SamplingRate.Sampling48000, Channels.Stereo);
             MultiplexManager.OnEvent += Process;
         }
 
@@ -31,7 +28,6 @@ namespace Megatowel.Multiplex
             {
                 GameObject.Destroy(source.Value);
             }
-            encoder.Dispose();
         }
 
         // TODO: More settings for sink, and the ability to have multiple.
@@ -65,9 +61,8 @@ namespace Megatowel.Multiplex
             }
         }
 
-        public static void Send(short[] audio, uint channel)
+        public static void Send(byte[] data, uint channel)
         {
-            byte[] data = encoder.Encode(audio);
             byte[] info = new byte[17];
             info[0] = 2;
             Array.Copy(MultiplexSink.streamId.ToByteArray(), 0, info, 1, 16);
