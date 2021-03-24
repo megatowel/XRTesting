@@ -30,12 +30,12 @@ namespace Megatowel.Multiplex
         {
             var obj = new GameObject();
             MultiplexSource speaker = obj.AddComponent<MultiplexSource>();
-            if (parent)
+            if (parent != null)
             {
                 obj.transform.parent = parent;
             }
             speaker.Id = id;
-            MultiplexSource._instances[id] = speaker;
+            _instances[id] = speaker;
             obj.name = $"Source ID {id}";
             return speaker;
         }

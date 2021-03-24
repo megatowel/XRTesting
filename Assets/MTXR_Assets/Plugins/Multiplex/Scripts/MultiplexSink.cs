@@ -25,8 +25,6 @@ namespace Megatowel.Multiplex
         public static Guid streamId = Guid.NewGuid();
         private static OpusEncoder encoder = new OpusEncoder(SamplingRate.Sampling48000, Channels.Mono);
 
-        private const float _chunkSizeInSeconds = 0.4f;
-
         private void Start()
         {
 #if UNITY_ANDROID
@@ -48,6 +46,7 @@ namespace Megatowel.Multiplex
             MTDebug.Log($"Initializing the RecordSystem {RecordSystem.init(virtchannels, FMOD.INITFLAGS.NORMAL, IntPtr.Zero)}");
 #else
             RecordSystem = RuntimeManager.CoreSystem;
+            encoder.EncoderDelay = Delay.Delay40ms;
 #endif
             RESULT result;
             result = RecordSystem.getRecordNumDrivers(out int numdrivers, out _);
@@ -139,12 +138,12 @@ namespace Megatowel.Multiplex
             sound.unlock(ptr1, ptr2, len1, len2);
             lastPos = position;
 
-            while (buffer.Count >= 48000 * _chunkSizeInSeconds * channels) // Whenever we get enough to make an opus packet
+            while (buffer.Count >= encoder.FrameSizePerChannel * channels) // Whenever we get enough to make an opus packet
             {
-                short[] opusBuffer = new short[(int)(48000 * _chunkSizeInSeconds * channels)];
+                short[] opusBuffer = new short[(int)(encoder.FrameSizePerChannel * channels)];
                 if (channels == 1 && encoder.InputChannels == Channels.Stereo)
                 {
-                    for (int i = 0; i < 48000 * _chunkSizeInSeconds; i++)
+                    for (int i = 0; i < encoder.FrameSizePerChannel; i++)
                     {
                         buffer.TryDequeue(out short popped);
                         opusBuffer[i * 2] = popped;
@@ -153,9 +152,10 @@ namespace Megatowel.Multiplex
                 }
                 else if (channels == 2 || encoder.InputChannels == Channels.Mono)
                 {
-                    for (int i = 0; i < 48000 * _chunkSizeInSeconds * channels; i++)
+                    for (int i = 0; i < encoder.FrameSizePerChannel * channels; i++)
                     {
-                        buffer.TryDequeue(out opusBuffer[i]);
+                        buffer.TryDequeue(out short popped);
+                        opusBuffer[i] = popped;
                     }
                 }
                 MultiplexVoice.Send(encoder.Encode(opusBuffer), 1);
