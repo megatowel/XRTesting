@@ -55,6 +55,12 @@ public class NetTest : NetBehaviour
         else if (netView.Authority != 0)
         {
             _rb.constraints = RigidbodyConstraints.FreezeAll;
+            _rb.velocity = Vector3.Lerp(_rb.velocity, netView.GetField<Vector3>(3), Time.deltaTime * 20);
+            _rb.angularVelocity = Vector3.Lerp(_rb.angularVelocity, netView.GetField<Vector3>(4), Time.deltaTime * 20);
+            if (_rb.velocity.magnitude + _rb.angularVelocity.magnitude < 0.015)
+            {
+                _lerpNumber = 1.0f;
+            }
             // This is for using two different lerp A points. This is so it doesn't build up incorrect extrapolation and "swing away".
             if (_lerpNumber <= 1.0f)
             {
@@ -67,8 +73,6 @@ public class NetTest : NetBehaviour
                 transform.position = Vector3.LerpUnclamped(_lastNetPosition, netView.GetField<Vector3>(1), _lerpNumber < _lerpMax ? _lerpNumber : 1.0f);
                 transform.rotation = Quaternion.LerpUnclamped(_lastNetRotation, netView.GetField<Quaternion>(2), _lerpNumber < _lerpMax ? _lerpNumber : 1.0f);
             }
-            _rb.velocity = Vector3.Lerp(_rb.velocity, netView.GetField<Vector3>(3), Time.deltaTime * 20);
-            _rb.angularVelocity = Vector3.Lerp(_rb.angularVelocity, netView.GetField<Vector3>(4), Time.deltaTime * 20);
         }
     }
 
