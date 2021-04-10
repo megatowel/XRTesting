@@ -18,7 +18,7 @@ public class NetTest : NetBehaviour
     private Quaternion _lastNetRotation;
 
     private float _lerpNumber = 0.0f;
-    private const float _lerpMax = 3.0f;
+    private const float _lerpMax = 5.0f;
 
     void Awake()
     {
