@@ -85,7 +85,10 @@ namespace Megatowel.NetObject
 
         public T GetLocalField<T>(byte fieldNum)
         {
-            return netObject.GetField<T>(fieldNum, true);
+            if (netObject.localFields.ContainsKey(fieldNum))
+                return netObject.GetField<T>(fieldNum, true);
+            else
+                return default(T);
         }
 
         private void Start()
