@@ -74,7 +74,6 @@ namespace Megatowel.NetObject
 
             if (packet.Info.bytes.Length > 0 && _infoRead.ReadByte() == 1)
             {
-                _dataRead.ReadByte();
                 foreach (NetObject netobj in NetObject.ReadFromBinaryReaders(_dataRead, _infoRead))
                 {
                     if (!allViews.ContainsKey(netobj.id) && netobj.remoteFields.ContainsKey(255))
@@ -107,7 +106,6 @@ namespace Megatowel.NetObject
         {
             _dataWriteMem.SetLength(0);
             _infoWriteMem.SetLength(0);
-            _dataWrite.Write((byte)1);
             _infoWrite.Write((byte)1);
 
             foreach (NetObject obj in toSubmit)
@@ -117,6 +115,10 @@ namespace Megatowel.NetObject
             }
             if (toSubmit.Count() != 0)
             {
+                if (_dataWriteMem.Position == 0)
+                {
+                    _dataWrite.Write((byte)1);
+                }
                 MultiplexManager.Send(new MultiplexPacket(new MultiplexData(_infoWriteMem.ToArray()),
                 new MultiplexData(_dataWriteMem.ToArray()), 1, MultiplexSendFlags.Reliable));
                 toSubmit.Clear();
